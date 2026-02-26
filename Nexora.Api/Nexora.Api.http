@@ -1,0 +1,6 @@
+@Nexora.Api_HostAddress = http://localhost:5244
+
+GET {{Nexora.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
