@@ -2,23 +2,25 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Nexora.Application.Interfaces.Context;
 
 namespace Nexora.Infrastructure.Context;
 
-public class ApplicationDbContext:IdentityDbContext<ApplicationUser>
+public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicationDbContext
 {
     private readonly IConfiguration config;
     public DbSet<Product> Product { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<Address> Addresses { get; set; }
+    public DbSet<Address> Addresses => Set<Address>();
+
     public DbSet<Category> Categories { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
-        
+      
     }
     
     

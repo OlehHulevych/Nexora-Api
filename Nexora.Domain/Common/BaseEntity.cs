@@ -7,9 +7,9 @@ public abstract class BaseEntity
 {
     [Key]
     public Guid Id { get; set; } = Guid.Empty;
-    [Timestamp,DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public DateTime CreatedAt { get; set; }
-    [Timestamp, DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public DateTime? UpdatedAt { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
 }

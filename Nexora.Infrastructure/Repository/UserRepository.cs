@@ -1,16 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Register;
+using Nexora.Infrastructure.Context;
 
 namespace Nexora.Infrastructure.Repository;
 
 public class UserRepository:IUserRepository
 {
-    public RegistrationUser _registrationUserHandler;
+    private readonly RegistrationUser _registrationUserHandler;
+    private readonly ApplicationDbContext _context;
 
-    public UserRepository(RegistrationUser registrationUser)
+    public UserRepository(ApplicationDbContext context, RegistrationUser registrationUser)
     {
         _registrationUserHandler = registrationUser;
+        _context = context;
     }
     public async Task<IResult> AddUser(RegisterUserCommand request)
     {

@@ -17,3 +17,4 @@ E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\refint\Nexora.I
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.pdb
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.genruntimeconfig.cache
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\ref\Nexora.Infrastructure.dll
+E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.sourcelink.json

@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -6,19 +7,25 @@ using Microsoft.IdentityModel.Tokens;
 using Nexora.Domain.Entities;
 using Nexora.Infrastructure.Context;
 using Nexora.Infrastructure.JWT;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore.Internal;
+using Nexora.Application.Interfaces.Context;
+using Nexora.Application.Interfaces.Repositories;
+using Nexora.Application.Users.Commands.Register;
+using Nexora.Infrastructure.Repository;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseNpgsql(connectionString));
+builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<JwtTokenHandler>();
+builder.Services.AddScoped<RegistrationUser>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -47,7 +54,12 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().WithMethods("GET", "POST", "PUT", "DELETE").AllowAnyHeader();
     });
 });
+builder.Services
+    .AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 builder.Services.AddControllers();
+
+
+
 var app = builder.Build();
 await EnsureRolesAsync(app);
 // Configure the HTTP request pipeline.

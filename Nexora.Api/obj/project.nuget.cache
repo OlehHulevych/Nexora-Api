@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "TDyU47IMB24=",
+  "dgSpecHash": "PAxBS4f4Z2Q=",
   "success": true,
   "projectFilePath": "E:\\Projects\\Nexora\\Server\\Nexora.Api\\Nexora.Api.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Oleh\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
+    "C:\\Users\\Oleh\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",
     "C:\\Users\\Oleh\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Oleh\\.nuget\\packages\\microsoft.aspnetcore.authentication\\2.3.0\\microsoft.aspnetcore.authentication.2.3.0.nupkg.sha512",
     "C:\\Users\\Oleh\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.3.0\\microsoft.aspnetcore.authentication.abstractions.2.3.0.nupkg.sha512",

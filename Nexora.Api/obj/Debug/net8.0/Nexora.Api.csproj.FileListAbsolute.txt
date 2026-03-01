@@ -128,3 +128,6 @@ E:\Projects\Nexora\Server\Nexora.Api\obj\Debug\net8.0\refint\Nexora.Api.dll
 E:\Projects\Nexora\Server\Nexora.Api\obj\Debug\net8.0\Nexora.Api.pdb
 E:\Projects\Nexora\Server\Nexora.Api\obj\Debug\net8.0\Nexora.Api.genruntimeconfig.cache
 E:\Projects\Nexora\Server\Nexora.Api\obj\Debug\net8.0\ref\Nexora.Api.dll
+E:\Projects\Nexora\Server\Nexora.Api\bin\Debug\net8.0\FluentValidation.dll
+E:\Projects\Nexora\Server\Nexora.Api\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
+E:\Projects\Nexora\Server\Nexora.Api\obj\Debug\net8.0\Nexora.Api.sourcelink.json

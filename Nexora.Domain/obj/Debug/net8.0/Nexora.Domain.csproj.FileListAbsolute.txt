@@ -12,3 +12,4 @@ E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\refint\Nexora.Domain.dl
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.pdb
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.genruntimeconfig.cache
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\ref\Nexora.Domain.dll
+E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.sourcelink.json

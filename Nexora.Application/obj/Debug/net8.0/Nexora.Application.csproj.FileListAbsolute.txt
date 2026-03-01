@@ -15,3 +15,4 @@ E:\Projects\Nexora\Server\Nexora.Application\obj\Debug\net8.0\refint\Nexora.Appl
 E:\Projects\Nexora\Server\Nexora.Application\obj\Debug\net8.0\Nexora.Application.pdb
 E:\Projects\Nexora\Server\Nexora.Application\obj\Debug\net8.0\Nexora.Application.genruntimeconfig.cache
 E:\Projects\Nexora\Server\Nexora.Application\obj\Debug\net8.0\ref\Nexora.Application.dll
+E:\Projects\Nexora\Server\Nexora.Application\obj\Debug\net8.0\Nexora.Application.sourcelink.json
