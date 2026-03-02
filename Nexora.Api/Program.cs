@@ -10,9 +10,11 @@ using Nexora.Infrastructure.JWT;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore.Internal;
 using Nexora.Application.Interfaces.Context;
+using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Register;
 using Nexora.Infrastructure.Repository;
+using Nexora.Infrastructure.Storage;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseNpgsql(connectionString));
 builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<JwtTokenHandler>();
+builder.Services.AddSingleton<IBlobStorage, UserBlobStorageService>();
+builder.Services.Configure<BlobStorageOptions>(builder.Configuration.GetSection(BlobStorageOptions.Section));
 builder.Services.AddScoped<RegistrationUser>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 

@@ -9,6 +9,7 @@ namespace Nexora.Infrastructure.Context;
 public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicationDbContext
 {
     private readonly IConfiguration config;
+    public DbSet<Avatar> Avatars { get; set; }
     public DbSet<Product> Product { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Order> Orders { get; set; }
@@ -27,6 +28,12 @@ public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicatio
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<Avatar>()
+            .HasOne(a => a.User)
+            .WithOne(u => u.Avatar)
+            .HasForeignKey<Avatar>(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<ApplicationUser>()
             .HasOne(u=>u.Address)
