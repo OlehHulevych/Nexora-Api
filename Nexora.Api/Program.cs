@@ -9,10 +9,12 @@ using Nexora.Infrastructure.Context;
 using Nexora.Infrastructure.JWT;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore.Internal;
+using Nexora.Api.ExceptionHandler;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Register;
+using Nexora.Application.Users.Commands.UploadAvatar;
 using Nexora.Infrastructure.Repository;
 using Nexora.Infrastructure.Storage;
 
@@ -21,11 +23,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseNpgsql(connectionString));
 builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<JwtTokenHandler>();
 builder.Services.AddSingleton<IBlobStorage, UserBlobStorageService>();
+builder.Services.AddScoped<UploadAvatarHandler>();
 builder.Services.Configure<BlobStorageOptions>(builder.Configuration.GetSection(BlobStorageOptions.Section));
 builder.Services.AddScoped<RegistrationUser>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -73,6 +77,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler(o=>{});
 app.UseHttpsRedirection();
 
 app.MapControllers();
