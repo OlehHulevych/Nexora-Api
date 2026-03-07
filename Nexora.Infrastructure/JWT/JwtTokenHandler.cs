@@ -4,13 +4,13 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-
+using Nexora.Application.Interfaces.JwtService;
 using Nexora.Domain.Entities;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Nexora.Infrastructure.JWT;
 
-public class JwtTokenHandler
+public class JwtTokenHandler:IJwtService
 {
    private readonly UserManager<ApplicationUser> _userManager;
    private readonly IConfiguration _config;

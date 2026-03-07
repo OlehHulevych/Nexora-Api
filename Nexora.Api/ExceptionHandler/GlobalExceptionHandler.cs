@@ -50,6 +50,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             ArgumentException => (StatusCodes.Status400BadRequest, "BadRequest", null),
             PasswordIsNotMatched => (StatusCodes.Status400BadRequest, "Password is not matched", null),
             UserAlreadyExistsException => (StatusCodes.Status400BadRequest, "User with this email already exists", null),
+            UserIsNotFoundException => (StatusCodes.Status400BadRequest, "User is not exist", null),
         _ => (StatusCodes.Status500InternalServerError, "Server internal error", null)
         };
     }
