@@ -11,10 +11,10 @@ E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastr
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.AssemblyInfoInputs.cache
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.AssemblyInfo.cs
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.csproj.CoreCompileInputs.cache
+E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.sourcelink.json
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.I.4F6A1434.Up2Date
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.dll
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\refint\Nexora.Infrastructure.dll
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.pdb
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.genruntimeconfig.cache
 E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\ref\Nexora.Infrastructure.dll
-E:\Projects\Nexora\Server\Nexora.Infrastructure\obj\Debug\net8.0\Nexora.Infrastructure.sourcelink.json

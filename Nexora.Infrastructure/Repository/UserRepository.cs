@@ -15,14 +15,14 @@ public class UserRepository:IUserRepository
 {
     private readonly RegistrationUser _registrationUserHandler;
     private readonly LoginUser _loginUserHandler;
-    private readonly HttpContext _context;
+    private readonly IHttpContextAccessor _context;
     private readonly ValidationErrors _validationErrorHandler;
     private readonly IValidator<RegisterUserCommand> _validator;
     private readonly IValidator<LoginUserCommand> _loginValidator;
 
     
 
-    public UserRepository(HttpContext context, RegistrationUser registrationUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator)
+    public UserRepository(IHttpContextAccessor context, RegistrationUser registrationUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator)
     {
         _registrationUserHandler = registrationUser;
         _loginUserHandler = loginUserHandler;
@@ -69,7 +69,7 @@ public class UserRepository:IUserRepository
             HttpOnly = false,
             SameSite = SameSiteMode.None
         };
-        _context.Response.Cookies.Append("token",response.token, cookieOptions);
+        _context.HttpContext?.Response.Cookies.Append("token",response.token, cookieOptions);
         return Results.Ok(new {Message = "The user is registered"});
 
     }

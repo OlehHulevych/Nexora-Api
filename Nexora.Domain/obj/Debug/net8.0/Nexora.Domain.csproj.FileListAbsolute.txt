@@ -7,9 +7,9 @@ E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.Generated
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.AssemblyInfoInputs.cache
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.AssemblyInfo.cs
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.csproj.CoreCompileInputs.cache
+E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.sourcelink.json
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.dll
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\refint\Nexora.Domain.dll
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.pdb
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.genruntimeconfig.cache
 E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\ref\Nexora.Domain.dll
-E:\Projects\Nexora\Server\Nexora.Domain\obj\Debug\net8.0\Nexora.Domain.sourcelink.json

@@ -1,4 +1,3 @@
-using System.Net.Mime;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -8,13 +7,17 @@ using Nexora.Domain.Entities;
 using Nexora.Infrastructure.Context;
 using Nexora.Infrastructure.JWT;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Nexora.Api.ExceptionHandler;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
+using Nexora.Application.Interfaces.JwtService;
 using Nexora.Application.Interfaces.Repositories;
+using Nexora.Application.Users.Commands.Login;
 using Nexora.Application.Users.Commands.Register;
 using Nexora.Application.Users.Commands.UploadAvatar;
+using Nexora.Application.Users.Commands.Validation;
+using Nexora.Application.Users.Commands.Validation.Login;
 using Nexora.Infrastructure.Repository;
 using Nexora.Infrastructure.Storage;
 
@@ -27,11 +30,14 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseNpgsql(connectionString));
 builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
-builder.Services.AddScoped<JwtTokenHandler>();
+builder.Services.AddScoped<IJwtService, JwtTokenHandler>();
+builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IBlobStorage, UserBlobStorageService>();
 builder.Services.AddScoped<UploadAvatarHandler>();
 builder.Services.Configure<BlobStorageOptions>(builder.Configuration.GetSection(BlobStorageOptions.Section));
 builder.Services.AddScoped<RegistrationUser>();
+builder.Services.AddScoped<LoginUser>();
+builder.Services.AddScoped<ValidationErrors>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
@@ -64,6 +70,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services
     .AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<LoginValidation>();
 builder.Services.AddControllers();
 
 
