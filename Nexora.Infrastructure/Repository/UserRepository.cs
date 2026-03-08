@@ -1,12 +1,14 @@
-﻿using FluentValidation;
+﻿using System.Security.Claims;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
+
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Login;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Nexora.Application.Users.Commands.Register;
 using Nexora.Application.Users.Commands.Validation;
-using Nexora.Infrastructure.Context;
+
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace Nexora.Infrastructure.Repository;
@@ -55,7 +57,7 @@ public class UserRepository:IUserRepository
         {
             return Results.ValidationProblem(_validationErrorHandler.validationErrosHandler(validationResults));
         }
-        var response = await _loginUserHandler.loginUserHandler(request);
+        var response = await _loginUserHandler.LoginUserHandler(request);
         if (response.token.IsNullOrEmpty())
         {
             return Results.BadRequest();
@@ -72,5 +74,16 @@ public class UserRepository:IUserRepository
         _context.HttpContext?.Response.Cookies.Append("token",response.token, cookieOptions);
         return Results.Ok(new {Message = "The user is registered"});
 
+    }
+
+    public async Task<IResult> RetrieveUserHandler(string id)
+    {
+        var retrievedUser = await _loginUserHandler.RetrieveUser(id);
+        if (retrievedUser.Equals(null))
+        {
+            throw new BadHttpRequestException("Failed to retrieve user");
+        }
+
+        return Results.Ok(new { Message = "The user is retrieved", User = retrievedUser });
     }
 }

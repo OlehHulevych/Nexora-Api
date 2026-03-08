@@ -10,4 +10,6 @@ public interface IUserRepository
     public Task<IResult> AddUser(RegisterUserCommand request);
     public Task<IResult> LoginUser(LoginUserCommand request);
 
+    public Task<IResult> RetrieveUserHandler(string id);
+
 }

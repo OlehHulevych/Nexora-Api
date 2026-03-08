@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces.JwtService;
+using Nexora.Domain.DTOs;
 using Nexora.Domain.Entities;
 using Nexora.Domain.Exceptions;
 using ValidationException = FluentValidation.ValidationException;
@@ -19,7 +21,7 @@ public class LoginUser
         _jwtService = jwtService;
     }
 
-    public async Task<LoginResponse> loginUserHandler(LoginUserCommand request)
+    public async Task<LoginResponse> LoginUserHandler(LoginUserCommand request)
     {
         if (request.email.IsNullOrEmpty() || request.password.IsNullOrEmpty())
         {
@@ -45,6 +47,24 @@ public class LoginUser
         }
 
         return new LoginResponse(token);
+    }
+
+    public async Task<UserDto> RetrieveUser(string Id)
+    {
+        if (Id.IsNullOrEmpty())
+        {
+            throw new BadHttpRequestException("There is no user`id");
+        }
+
+        var user = await _userManager.Users.Include(u=>u.Avatar).Include(u=>u.Address).FirstOrDefaultAsync(u=>u.Id.Equals(Id));
+        if (user == null)
+        {
+            throw new UserIsNotFoundException();
+        }
+
+        return new UserDto(user.Id, user.FirstName + " " + user.LastName, user.Email, user.Avatar.Uri,
+            user.Address?.Line1 + ", "+ user.Address?.City + ", "+user.Address?.Country);
+
     }
 
 }
