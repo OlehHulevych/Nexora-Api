@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nexora.Application.Interfaces.IBlobStorage;
+using Nexora.Domain.Entities;
 
 namespace Nexora.Infrastructure.Storage;
 
-public class UserBlobStorageService:IBlobStorage
+public class UserBlobStorageService:IUserBlobStorage
 {
     private readonly BlobContainerClient _containerClient;
     private readonly ILogger<UserBlobStorageService> _logger;
@@ -31,13 +32,13 @@ public class UserBlobStorageService:IBlobStorage
         _logger = logger;
     }
     
-    public async Task<string> UploadAsync(IFormFile file, string folder, CancellationToken ct = default)
+    public async Task<(string,string)> UploadAsync(IFormFile file, string folder, CancellationToken ct = default)
     {
         
         var extension = Path.GetExtension(file.FileName);
         if (!AllowedExtensions.Contains(extension))
         {
-            throw new InvalidOperationException($"File type '{extension}' is now allowed ");
+            throw new InvalidOperationException($"File type '{extension}' is not allowed ");
         }
 
         var blobPath = BuildBlobPath( folder, file.FileName);
@@ -45,6 +46,20 @@ public class UserBlobStorageService:IBlobStorage
         await using var fileStream = file.OpenReadStream();
         await blobClient.UploadAsync(fileStream, new BlobHttpHeaders { ContentType = file.ContentType},
             cancellationToken: ct);
-        return blobClient.Uri.ToString();
+        return (blobClient.Uri.ToString(),blobPath);
+    }
+
+    public async Task<(string,string)> UpdateAsync(IFormFile file, ApplicationUser user, Avatar avatarForUpdate, CancellationToken ct = default)
+    {
+        var extension = Path.GetExtension(file.FileName);
+        if (!AllowedExtensions.Contains(extension))
+        {
+            throw new InvalidOperationException($"File type '{extension}' is not allowed");
+        }
+
+        var blobName = avatarForUpdate.FilePath;
+        var blobClient = _containerClient.GetBlobClient(blobName);
+        await blobClient.DeleteIfExistsAsync(cancellationToken:ct);
+        return await UploadAsync(file,$"avatars/{user.FirstName + "_" +user.LastName}");
     }
 }

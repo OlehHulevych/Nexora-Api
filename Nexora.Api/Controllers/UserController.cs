@@ -1,14 +1,11 @@
 ﻿using System.Security.Claims;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Login;
 using Nexora.Application.Users.Commands.Register;
-using Nexora.Domain.Entities;
-using Nexora.Infrastructure.Repository;
+
 
 namespace Nexora.Api.Controllers;
 [ApiController]

@@ -34,7 +34,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseNpgsql(c
 builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 builder.Services.AddScoped<IJwtService, JwtTokenHandler>();
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddSingleton<IBlobStorage, UserBlobStorageService>();
+builder.Services.AddSingleton<IUserBlobStorage, UserBlobStorageService>();
 builder.Services.AddScoped<UploadAvatarHandler>();
 builder.Services.Configure<BlobStorageOptions>(builder.Configuration.GetSection(BlobStorageOptions.Section));
 builder.Services.AddScoped<RegistrationUser>();

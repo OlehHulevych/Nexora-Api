@@ -54,7 +54,7 @@ public class RegistrationUser
                 request.Address.City, request.Address.Country, request.Address.PostalCode, request.Address.Line2);
             await _context.Addresses.AddAsync(address);
             UploadAvatarResponse avatarResponse =
-                await _uploadAvatar.UploadAvatar(new UploadAvatarCommand(user.Id, user, request.Avatar));
+                await _uploadAvatar.UploadAvatar(new UploadAvatarCommand(user.Id, user, request.Avatar), request.FirstName+"_"+request.LastName);
             if (avatarResponse.uri.IsNullOrEmpty())
             {
                 throw new Exception("Register failed during the uploading avatar");
@@ -65,7 +65,7 @@ public class RegistrationUser
             if (!result.Succeeded)
             {
                 var errors = string.Join("; ", result.Errors.Select(e => $"{e.Code}: {e.Description}"));
-                throw new AuthenticationFailureException(errors); // <= NOW you’ll see why
+                throw new AuthenticationFailureException(errors); 
             }
             RegisterUserResponse registerUserResult = new RegisterUserResponse(user.Id, user.Email, user.FirstName, user.LastName, address.Line1);
             _logger.LogInformation("The user is registered");
