@@ -7,6 +7,7 @@ using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Login;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Nexora.Application.Users.Commands.Register;
+using Nexora.Application.Users.Commands.Update;
 using Nexora.Application.Users.Commands.Validation;
 
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
@@ -17,6 +18,7 @@ public class UserRepository:IUserRepository
 {
     private readonly RegistrationUser _registrationUserHandler;
     private readonly LoginUser _loginUserHandler;
+    private readonly UpdateUserService _updateUserService;
     private readonly IHttpContextAccessor _context;
     private readonly ValidationErrors _validationErrorHandler;
     private readonly IValidator<RegisterUserCommand> _validator;
@@ -24,11 +26,12 @@ public class UserRepository:IUserRepository
 
     
 
-    public UserRepository(IHttpContextAccessor context, RegistrationUser registrationUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator)
+    public UserRepository(IHttpContextAccessor context, RegistrationUser registrationUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator, UpdateUserService updateUserService)
     {
         _registrationUserHandler = registrationUser;
         _loginUserHandler = loginUserHandler;
         _validator = validator;
+        _updateUserService = updateUserService;
         _validationErrorHandler = validationErrorHandler;
         _loginValidator = loginValidator;
         _context = context;
@@ -74,6 +77,17 @@ public class UserRepository:IUserRepository
         _context.HttpContext?.Response.Cookies.Append("token",response.token, cookieOptions);
         return Results.Ok(new {Message = "The user is registered"});
 
+    }
+
+    public async Task<IResult> UpdateUser(UpdateUserCommand updateUserCommand)
+    {
+        UpdateResponse updateResponse = await _updateUserService.UpdateUserHandler(updateUserCommand);
+        if (updateResponse.User.Equals(null))
+        {
+            return Results.BadRequest("Failed to update user");
+        }
+
+        return Results.Ok(updateResponse);
     }
 
     public async Task<IResult> RetrieveUserHandler(string id)

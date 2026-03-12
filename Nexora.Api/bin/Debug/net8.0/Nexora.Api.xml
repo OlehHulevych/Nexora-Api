@@ -16,5 +16,10 @@
             </summary>
             <returns>JWT token in cookies</returns>
         </member>
+        <member name="M:Nexora.Api.Controllers.UserController.updateUser(Nexora.Application.Users.Commands.Update.UpdateUserCommand)">
+            <summary>
+            Update of  User.
+            </summary>
+        </member>
     </members>
 </doc>

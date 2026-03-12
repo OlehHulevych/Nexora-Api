@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Login;
 using Nexora.Application.Users.Commands.Register;
+using Nexora.Application.Users.Commands.Update;
 
 
 namespace Nexora.Api.Controllers;
@@ -53,6 +54,16 @@ public class UserController:ControllerBase
             return Results.BadRequest(new { Message = "Ivalid id" });
         }
         return await _userRepository.RetrieveUserHandler(Id);
+    }
+    /// <summary>
+    /// Update of  User.
+    /// </summary>
+    [Authorize]
+    [Route("/update")]
+    [HttpPost]
+    public async Task<IResult> updateUser([FromForm]UpdateUserCommand userCommand)
+    {
+        return await _userRepository.UpdateUser(userCommand);
     }
 
 }

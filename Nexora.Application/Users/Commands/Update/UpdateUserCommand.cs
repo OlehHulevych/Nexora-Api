@@ -9,6 +9,5 @@ public record UpdateUserCommand (
     string? LastName,
     IFormFile? Photo,
     string? Email,
-    string? Password,
     AddressCommand? Address
     );
