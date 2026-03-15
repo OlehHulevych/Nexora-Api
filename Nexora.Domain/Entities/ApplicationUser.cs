@@ -18,4 +18,6 @@ public class ApplicationUser:IdentityUser
     public ICollection<Order> OrderAsBuyer { get; set; } = new List<Order>();
     public Address? Address { get; set; }
     public ICollection<Review> ReviewWritten { get; set; } = new List<Review>();
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 }

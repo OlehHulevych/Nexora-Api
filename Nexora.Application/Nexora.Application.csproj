@@ -24,5 +24,8 @@
       <ProjectReference Include="..\Nexora.Domain\Nexora.Domain.csproj" />
       
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Product\" />
+    </ItemGroup>
 
 </Project>

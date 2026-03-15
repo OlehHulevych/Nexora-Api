@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Login;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Nexora.Application.Users.Commands.GettingUsers;
 using Nexora.Application.Users.Commands.Register;
 using Nexora.Application.Users.Commands.Update;
 using Nexora.Application.Users.Commands.Validation;
@@ -23,10 +24,11 @@ public class UserRepository:IUserRepository
     private readonly ValidationErrors _validationErrorHandler;
     private readonly IValidator<RegisterUserCommand> _validator;
     private readonly IValidator<LoginUserCommand> _loginValidator;
+    private readonly GettingUsersService _gettingUsersService;
 
     
 
-    public UserRepository(IHttpContextAccessor context, RegistrationUser registrationUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator, UpdateUserService updateUserService)
+    public UserRepository(IHttpContextAccessor context, RegistrationUser registrationUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator, UpdateUserService updateUserService,GettingUsersService gettingUsersService)
     {
         _registrationUserHandler = registrationUser;
         _loginUserHandler = loginUserHandler;
@@ -35,6 +37,7 @@ public class UserRepository:IUserRepository
         _validationErrorHandler = validationErrorHandler;
         _loginValidator = loginValidator;
         _context = context;
+        _gettingUsersService = gettingUsersService;
     }
     public async Task<IResult> AddUser(RegisterUserCommand request)
     {
@@ -99,5 +102,16 @@ public class UserRepository:IUserRepository
         }
 
         return Results.Ok(new { Message = "The user is retrieved", User = retrievedUser });
+    }
+
+    public async Task<IResult> GetAllUsers(AllUserCommand request)
+    {
+        AllUserResponse response = await _gettingUsersService.getUsersHandler(request);
+        if (response.Equals(null))
+        {
+            return Results.BadRequest("Failed to retrieve the users");
+        }
+
+        return Results.Ok(new { message = "The users are retrieved", data = response });
     }
 }
