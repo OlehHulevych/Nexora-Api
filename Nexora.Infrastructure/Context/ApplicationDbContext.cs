@@ -13,6 +13,7 @@ public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicatio
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
+    
     public DbSet<Cart> Carts { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Listing> Listings { get; set; }

@@ -15,15 +15,15 @@ using Nexora.Domain.Exceptions;
 
 namespace Nexora.Application.Users.Commands.Register;
 
-public class RegistrationUser
+public class RegisterUser
 {
-    private ILogger<RegistrationUser> _logger;
+    private ILogger<RegisterUser> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IApplicationDbContext _context;
     private readonly UploadAvatarHandler _uploadAvatar;
   
 
-    public RegistrationUser( IApplicationDbContext context, UserManager<ApplicationUser> userManager, UploadAvatarHandler uploadAvatar, ILogger<RegistrationUser> logger)
+    public RegisterUser( IApplicationDbContext context, UserManager<ApplicationUser> userManager, UploadAvatarHandler uploadAvatar, ILogger<RegisterUser> logger)
     {
         _logger = logger;
         _userManager = userManager;

@@ -4,13 +4,7 @@ namespace Nexora.Domain.Entities;
 
 public class Review:BaseEntity
 {
-    public Review(Guid productId, string authorId,  int rating, string? comment)
-    {
-        ProductId = productId;
-        AuthorId = authorId;
-        Rating = rating;
-        Comment = comment;
-    }
+    
 
     public Guid ProductId { get; set; }
     public Listing? Product { get; set; }

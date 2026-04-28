@@ -46,7 +46,7 @@ builder.Services.AddSingleton<IUserBlobStorage, UserBlobStorageService>();
 builder.Services.AddScoped<UploadAvatarHandler>();
 builder.Services.AddScoped<UpdateUserService>();
 builder.Services.Configure<BlobStorageOptions>(builder.Configuration.GetSection(BlobStorageOptions.Section));
-builder.Services.AddScoped<RegistrationUser>();
+builder.Services.AddScoped<RegisterUser>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductBlobStorage, ProductBlobStorageService>();
 builder.Services.AddScoped<CreateProduct>();

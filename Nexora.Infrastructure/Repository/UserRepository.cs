@@ -19,7 +19,7 @@ namespace Nexora.Infrastructure.Repository;
 
 public class UserRepository:IUserRepository
 {
-    private readonly RegistrationUser _registrationUserHandler;
+    private readonly RegisterUser _registerUserHandler;
     private readonly LoginUser _loginUserHandler;
     private readonly UpdateUserService _updateUserService;
     private readonly IHttpContextAccessor _context;
@@ -33,9 +33,9 @@ public class UserRepository:IUserRepository
 
     
 
-    public UserRepository(IHttpContextAccessor context, RegistrationUser registrationUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator, UpdateUserService updateUserService,GettingUsersService gettingUsersService, Promote promoteUserService, DeleteUser deleteUser, IGoogleAuthService googleAuthService)
+    public UserRepository(IHttpContextAccessor context, RegisterUser registerUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator, UpdateUserService updateUserService,GettingUsersService gettingUsersService, Promote promoteUserService, DeleteUser deleteUser, IGoogleAuthService googleAuthService)
     {
-        _registrationUserHandler = registrationUser;
+        _registerUserHandler = registerUser;
         _loginUserHandler = loginUserHandler;
         _validator = validator;
         _updateUserService = updateUserService;
@@ -64,7 +64,7 @@ public class UserRepository:IUserRepository
         {
             return Results.ValidationProblem(_validationErrorHandler.validationErrosHandler(validationResults));
         }
-        RegisterUserResponse response = await _registrationUserHandler.RegisterUserService(request);
+        RegisterUserResponse response = await _registerUserHandler.RegisterUserService(request);
         if (String.IsNullOrEmpty(response.FirstName))
         {
             return Results.BadRequest(new { message = "The user is not registered" });

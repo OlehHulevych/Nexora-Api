@@ -10,6 +10,7 @@ public interface IApplicationDbContext
     DbSet<ApplicationUser> Users { get; }
     DbSet<IdentityRole> Roles { get; }
     DbSet<ProductImage> ProductImages { get; }
+    public DbSet<Domain.Entities.Review> Reviews { get; set; }
     DbSet<Domain.Entities.Cart> Carts { get;}
     DbSet<CartItem> CartItems { get;}
     DbSet<IdentityUserRole<string>> UserRoles { get; }
