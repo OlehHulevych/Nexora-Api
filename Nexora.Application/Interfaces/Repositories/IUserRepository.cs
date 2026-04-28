@@ -12,7 +12,7 @@ public interface IUserRepository
 {
     public Task<IResult> AddGoogleUser(GoogleSignInVM? model);
     public Task<IResult> AddUser(RegisterUserCommand request);
-    public Task<IResult> LoginUser(LoginUserCommand request);
+    public Task<IResult> LoginUser(LoginUserCommand? request=null, GoogleSignInVM? model=null);
     public Task<IResult> UpdateUser(UpdateUserCommand updateUserCommand);
 
     public Task<IResult> RetrieveUserHandler(string id);

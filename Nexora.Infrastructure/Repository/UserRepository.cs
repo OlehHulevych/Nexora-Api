@@ -73,19 +73,25 @@ public class UserRepository:IUserRepository
         return Results.Ok(new { message = "The user is registered", data = response });
     }
 
-    public async Task<IResult> LoginUser(LoginUserCommand request)
+    public async Task<IResult> LoginUser(LoginUserCommand? request, GoogleSignInVM? model)
     {
+        LoginResponse? response = null;
+        if (request != null)
+        {
+            var validationResults = await _loginValidator.ValidateAsync(request);
+            if (!validationResults.IsValid)
+            {
+                return Results.ValidationProblem(_validationErrorHandler.validationErrosHandler(validationResults));
+            }
+            response = await _loginUserHandler.LoginUserHandler(request);
+            
+        }
+
+        if (model != null)
+        {
+            response = await _googleAuthService.GoogleLogIn(model);
+        }
         
-        var validationResults = await _loginValidator.ValidateAsync(request);
-        if (!validationResults.IsValid)
-        {
-            return Results.ValidationProblem(_validationErrorHandler.validationErrosHandler(validationResults));
-        }
-        var response = await _loginUserHandler.LoginUserHandler(request);
-        if (response.token.IsNullOrEmpty())
-        {
-            return Results.BadRequest();
-        }
 
         var cookieOptions = new CookieOptions()
         {

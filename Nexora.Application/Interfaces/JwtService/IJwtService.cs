@@ -4,5 +4,5 @@ namespace Nexora.Application.Interfaces.JwtService;
 
 public interface IJwtService
 {
-    public Task<string> CreateToken(ApplicationUser user);
+    public Task<string?> CreateToken(ApplicationUser user);
 }

@@ -21,7 +21,7 @@ public class JwtTokenHandler:IJwtService
       _config = config;
    }
 
-   public async Task<string> CreateToken(ApplicationUser user)
+   public async Task<string?> CreateToken(ApplicationUser user)
    {
       var claims = new List<Claim>
       {

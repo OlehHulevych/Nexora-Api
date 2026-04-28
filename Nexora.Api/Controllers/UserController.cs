@@ -41,16 +41,23 @@ public class UserController:ControllerBase
     /// <returns>JWT token in cookies</returns>
     [Route("/login")]
     [HttpPost]
-    public async Task<IResult> LoginUserHandler([FromForm] LoginUserCommand request)
+    public async Task<IResult> LoginUserHandler([FromForm] LoginUserCommand? request)
     {
         return await _userRepository.LoginUser(request);
+    }
+
+    [Route("/register/google")]
+    [HttpPost]
+    public async Task<IResult> RegisterThroughGoogle([FromBody] GoogleSignInVM model)
+    {
+        return await _userRepository.AddGoogleUser(model);
     }
 
     [Route("/login/google")]
     [HttpPost]
     public async Task<IResult> LoginThroughGoogle([FromBody] GoogleSignInVM model)
     {
-        return await _userRepository.AddGoogleUser(model);
+        return await _userRepository.LoginUser(null,model);
     }
     
     [Authorize]
