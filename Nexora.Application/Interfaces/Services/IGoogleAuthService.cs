@@ -4,5 +4,5 @@ namespace Nexora.Application.Interfaces.Services;
 
 public interface IGoogleAuthService
 {
-    Task<UserDto> GoogleSignIn(GoogleSignInVM model);
+    Task<UserDto?> GoogleSignIn(GoogleSignInVM? model);
 }

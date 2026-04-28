@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Login;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Users.Commands.GettingUsers;
 using Nexora.Application.Users.Commands.Register;
 using Nexora.Application.Users.Commands.Update;
@@ -28,10 +29,11 @@ public class UserRepository:IUserRepository
     private readonly GettingUsersService _gettingUsersService;
     private readonly Promote _promoteUserService;
     private readonly DeleteUser _deleteUser;
+    private readonly IGoogleAuthService _googleAuthService;
 
     
 
-    public UserRepository(IHttpContextAccessor context, RegistrationUser registrationUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator, UpdateUserService updateUserService,GettingUsersService gettingUsersService, Promote promoteUserService, DeleteUser deleteUser)
+    public UserRepository(IHttpContextAccessor context, RegistrationUser registrationUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator, UpdateUserService updateUserService,GettingUsersService gettingUsersService, Promote promoteUserService, DeleteUser deleteUser, IGoogleAuthService googleAuthService)
     {
         _registrationUserHandler = registrationUser;
         _loginUserHandler = loginUserHandler;
@@ -43,7 +45,18 @@ public class UserRepository:IUserRepository
         _gettingUsersService = gettingUsersService;
         _promoteUserService = promoteUserService;
         _deleteUser = deleteUser;
+        _googleAuthService = googleAuthService;
+
     }
+
+    public async Task<IResult> AddGoogleUser(GoogleSignInVM? model)
+    {
+        if (model == null || model?.IdToken == null) throw new ArgumentException();
+        UserDto? response = await _googleAuthService.GoogleSignIn(model);
+        if (response is null) throw new BadHttpRequestException("Failed to login through google");
+        return Results.Ok(new {message = "The user is registered", user = response});
+    }
+
     public async Task<IResult> AddUser(RegisterUserCommand request)
     {
         var validationResults = await _validator.ValidateAsync(request);

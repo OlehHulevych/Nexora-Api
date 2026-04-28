@@ -8,6 +8,7 @@ using Nexora.Application.Users.Commands.Login;
 using Nexora.Application.Users.Commands.Register;
 using Nexora.Application.Users.Commands.Update;
 using Nexora.Domain.Constants;
+using Nexora.Domain.DTOs;
 
 
 namespace Nexora.Api.Controllers;
@@ -43,6 +44,13 @@ public class UserController:ControllerBase
     public async Task<IResult> LoginUserHandler([FromForm] LoginUserCommand request)
     {
         return await _userRepository.LoginUser(request);
+    }
+
+    [Route("/login/google")]
+    [HttpPost]
+    public async Task<IResult> LoginThroughGoogle([FromBody] GoogleSignInVM model)
+    {
+        return await _userRepository.AddGoogleUser(model);
     }
     
     [Authorize]
