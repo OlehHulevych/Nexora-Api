@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="nexora_db@ep-rough-credit-a9vjecqx-pooler.gwc.azure.neon.tech" uuid="6309f421-8962-423c-9610-d24277ad9658">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://ep-rough-credit-a9vjecqx-pooler.gwc.azure.neon.tech:5432/nexora_db?user=neondb_owner&amp;password=npg_Pnl6d5rgTzUL&amp;sslmode=require</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>

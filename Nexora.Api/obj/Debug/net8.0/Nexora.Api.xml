@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Nexora.Api</name>
+    </assembly>
+    <members>
+        <member name="M:Nexora.Api.Controllers.UserController.AddUserHandler(Nexora.Application.Users.Commands.Register.RegisterUserCommand)">
+            <summary>
+            Registration of  User.
+            </summary>
+            <returns>New registered user</returns>
+        </member>
+        <member name="M:Nexora.Api.Controllers.UserController.LoginUserHandler(Nexora.Application.Users.Commands.Login.LoginUserCommand)">
+            <summary>
+            Login of  User.
+            </summary>
+            <returns>JWT token in cookies</returns>
+        </member>
+        <member name="M:Nexora.Api.Controllers.UserController.UpdateUser(Nexora.Application.Users.Commands.Update.UpdateUserCommand)">
+            <summary>
+            Update of  User.
+            </summary>
+        </member>
+    </members>
+</doc>
