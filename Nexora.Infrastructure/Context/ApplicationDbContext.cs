@@ -81,6 +81,10 @@ public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicatio
             .WithOne()
             .HasForeignKey<Cart>(ct => ct.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<Review>().HasOne(r => r.MainReview)
+            .WithMany(r => r.Reviews)
+            .HasForeignKey(r => r.MainReviewId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     

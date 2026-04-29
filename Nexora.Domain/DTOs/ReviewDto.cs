@@ -2,6 +2,6 @@
 
 public record ReviewDto(
     string Username,
-    int Rating,
+    int? Rating,
     string Description
     );
