@@ -20,7 +20,7 @@ public class ReviewService:IReviewService
         _userManager = userManager;
     }
 
-    public async Task<ReviewDto> AddReview(ReviewRequest? request)
+    public async Task<ReviewDto?> AddReview(ReviewRequest? request)
     {
         var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null) throw new AuthenticationException("Failed to find user");
@@ -41,7 +41,7 @@ public class ReviewService:IReviewService
 
     }
 
-    public async Task<Guid> LikeReview(Guid? reviewId)
+    public async Task<Guid?> LikeReview(Guid? reviewId)
     {
         if (reviewId == null) throw new ArgumentNullException(nameof(reviewId), "ReviewId is required");
         Domain.Entities.Review? review = await _context.Reviews.FirstOrDefaultAsync(r=>r.Id.Equals(reviewId));
@@ -51,9 +51,9 @@ public class ReviewService:IReviewService
         return review.Id;
     }
 
-    public async Task<ReviewDto> AnswerOnReview(AnswerOnReviewRequest? request)
+    public async Task<ReviewDto?> AnswerOnReview(AnswerOnReviewRequest? request)
     {
-        if (request == null || request.ReviewId == null || request.UserId==null || request.ListingId ==null) throw new ArgumentNullException(nameof(request), "ReviewId is required");
+        if (request == null || request.ReviewId == null || request.UserId==null || request.ListingId == null) throw new ArgumentNullException(nameof(request), "ReviewId is required");
         var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null) throw new AuthenticationException("Failed to find user");
         var review = await _context.Reviews.FirstOrDefaultAsync(r=>r.Id.Equals(request.ReviewId));
