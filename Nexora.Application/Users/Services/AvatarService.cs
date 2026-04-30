@@ -2,11 +2,12 @@
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Domain.Entities;
 
 namespace Nexora.Application.Users.Commands.UploadAvatar;
 
-public class AvatarService
+public class AvatarService:IAvatarService
 {
     private readonly IUserBlobStorage _userUserBlobStorage;
     private readonly IApplicationDbContext _context;
