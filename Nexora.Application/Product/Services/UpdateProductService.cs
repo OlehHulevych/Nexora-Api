@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Product.Command;
 using Nexora.Domain.Exceptions;
 
 namespace Nexora.Application.Product.Services;
 
-public class UpdateProductService
+public class UpdateProductService:IUpdateProductService
 {
     private readonly IApplicationDbContext _context;
     private readonly IProductBlobStorage _blobStorage;

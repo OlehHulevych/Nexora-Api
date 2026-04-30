@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Interfaces.Context;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Product.Command;
 using Nexora.Application.Product.Responses;
 using Nexora.Domain.DTOs;
 
 namespace Nexora.Application.Product.Services;
 
-public class GetProduct
+public class GetProduct:IGetProductService
 {
     private readonly IApplicationDbContext _context;
     

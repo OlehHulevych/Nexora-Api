@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Identity;
 using Nexora.Application.Category.Services;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Product.Command;
 
 
 
 namespace Nexora.Application.Product.Services;
 
-public class CreateProduct
+public class CreateProduct:ICreateProduct
 {
     private readonly IApplicationDbContext _context;
     private readonly IProductBlobStorage _storage;
