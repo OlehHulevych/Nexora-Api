@@ -2,10 +2,11 @@
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Category;
 using Nexora.Application.Category.Services;
+using Nexora.Application.Interfaces.Repositories;
 
 namespace Nexora.Infrastructure.Repository;
 
-public class CategoryRepository
+public class CategoryRepository:ICategoryRepository
 {
     private readonly CategoryService _categoryService;
 

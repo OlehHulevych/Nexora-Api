@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexora.Application.Category;
+using Nexora.Application.Interfaces.Repositories;
 using Nexora.Domain.Constants;
 using Nexora.Infrastructure.Repository;
 
@@ -9,8 +10,8 @@ namespace Nexora.Api.Controllers;
 [Route("api/category")]
 public class CategoryController : Controller
 {
-    private readonly CategoryRepository _categoryRepository;
-    public CategoryController(CategoryRepository categoryRepository)
+    private readonly ICategoryRepository _categoryRepository;
+    public CategoryController(ICategoryRepository categoryRepository)
     {
         _categoryRepository = categoryRepository;
     }

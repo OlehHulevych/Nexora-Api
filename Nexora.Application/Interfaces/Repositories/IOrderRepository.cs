@@ -1,6 +1,6 @@
 ﻿namespace Nexora.Application.Interfaces.Repositories;
 
-public interface OrderRepository
+public interface IOrderRepository
 {
     public Task<Guid> CreateOrder();
     public Task<Guid> ChangeOrderStatus();
