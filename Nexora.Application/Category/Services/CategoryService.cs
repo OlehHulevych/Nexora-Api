@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Nexora.Application.Interfaces;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Domain;
 
 namespace Nexora.Application.Category.Services;
 
-public class CategoryService
+public class CategoryService:ICategoryService
 {
     public IApplicationDbContext _context;
 

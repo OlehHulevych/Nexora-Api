@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Application.Interfaces.Repositories;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Product.Command;
 using Nexora.Application.Product.Services;
 using Nexora.Application.Users.Commands.GettingUsers;
@@ -17,24 +18,20 @@ namespace Nexora.Infrastructure.Repository;
 public class ProductRepository:IProductRepository
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly CreateProduct _createProduct;
-    private readonly GetProduct _getProduct;
+    private readonly IListingService _listingService;
     private readonly IApplicationDbContext _context;
     private readonly IProductBlobStorage _blobStorage;
-    private readonly UpdateProductService _updateProductService;
 
-    public ProductRepository(CreateProduct createProduct, GetProduct getProduct, IApplicationDbContext context, UserManager<ApplicationUser> userManager, IProductBlobStorage blobStorage, UpdateProductService updateProductService)
+    public ProductRepository(IListingService listingService, IApplicationDbContext context, UserManager<ApplicationUser> userManager, IProductBlobStorage blobStorage)
     {
-        _updateProductService = updateProductService;
-        _createProduct = createProduct;
-        _getProduct = getProduct;
+        _listingService = listingService;
         _context = context;
         _userManager = userManager;
         _blobStorage = blobStorage;
     }
     public async Task<IResult> CreateProduct(CreateProductCommand request, string id)
     {
-        var response = await _createProduct.AddProduct(request, id);
+        var response = await _listingService.AddProduct(request, id);
         if (response.Equals(null))
         {
             return Results.BadRequest(new {message = "Something went wrong"});
@@ -46,7 +43,7 @@ public class ProductRepository:IProductRepository
 
     public async Task<IResult> GetAllProduct(GetProductsCommand request)
     {
-        var response = await _getProduct.GetProductsService(request);
+        var response = await _listingService.GetProductsService(request);
         if (response.Equals(null))
         {
             return Results.BadRequest(new { message = "Something went wrong" });
@@ -56,7 +53,7 @@ public class ProductRepository:IProductRepository
 
     public async Task<IResult> GetProductById(Guid id)
     {
-        var listing = await _getProduct.GetProductById(id);
+        var listing = await _listingService.GetProductById(id);
         if (listing == null)
         {
             return Results.BadRequest("Failed to get listing");
@@ -70,7 +67,7 @@ public class ProductRepository:IProductRepository
 
     public async Task<IResult> UpdateProduct(UpdateProductCommand request)
     {
-        var id = await _updateProductService.UpdateProductHandler(request);
+        var id = await _listingService.UpdateProductHandler(request);
         if (id == Guid.Empty)
         {
             return Results.BadRequest($"Failed to update listing");

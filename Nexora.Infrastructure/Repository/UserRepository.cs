@@ -5,13 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.Login;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Users.Commands.GettingUsers;
 using Nexora.Application.Users.Commands.Register;
 using Nexora.Application.Users.Commands.Update;
 using Nexora.Application.Users.Commands.Validation;
-using Nexora.Application.Users.Services;
 using Nexora.Domain.DTOs;
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
@@ -19,28 +17,27 @@ namespace Nexora.Infrastructure.Repository;
 
 public class UserRepository:IUserRepository
 {
-    private readonly RegisterUser _registerUserHandler;
-    private readonly LoginUser _loginUserHandler;
     private readonly IHttpContextAccessor _context;
     private readonly ValidationErrors _validationErrorHandler;
     private readonly IValidator<RegisterUserCommand> _validator;
     private readonly IValidator<LoginUserCommand> _loginValidator;
     private readonly IGoogleAuthService _googleAuthService;
     private readonly IUserService _userService;
+    private readonly IAuthService _authService;
 
     
 
-    public UserRepository(IHttpContextAccessor context, RegisterUser registerUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, 
+    public UserRepository(IHttpContextAccessor context, IAuthService authService, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, 
         IValidator<LoginUserCommand> loginValidator, IGoogleAuthService googleAuthService, IUserService userService)
     {
-        _registerUserHandler = registerUser;
-        _loginUserHandler = loginUserHandler;
+        
         _validator = validator;
         _validationErrorHandler = validationErrorHandler;
         _loginValidator = loginValidator;
         _context = context;
         _googleAuthService = googleAuthService;
         _userService = userService;
+        _authService = authService;
 
 
     }
@@ -60,7 +57,7 @@ public class UserRepository:IUserRepository
         {
             return Results.ValidationProblem(_validationErrorHandler.validationErrosHandler(validationResults));
         }
-        RegisterUserResponse response = await _registerUserHandler.RegisterUserService(request);
+        RegisterUserResponse response = await _authService.RegisterUserService(request);
         if (String.IsNullOrEmpty(response.FirstName))
         {
             return Results.BadRequest(new { message = "The user is not registered" });
@@ -79,7 +76,7 @@ public class UserRepository:IUserRepository
             {
                 return Results.ValidationProblem(_validationErrorHandler.validationErrosHandler(validationResults));
             }
-            response = await _loginUserHandler.LoginUserHandler(request);
+            response = await _authService.LoginUserHandler(request);
             
         }
 
@@ -115,7 +112,7 @@ public class UserRepository:IUserRepository
 
     public async Task<IResult> RetrieveUserHandler(string id)
     {
-        var retrievedUser = await _loginUserHandler.RetrieveUser(id);
+        var retrievedUser = await _authService.RetrieveUser(id);
         if (retrievedUser.Equals(null))
         {
             throw new BadHttpRequestException("Failed to retrieve user");
