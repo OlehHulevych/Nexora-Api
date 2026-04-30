@@ -6,11 +6,11 @@ using Nexora.Domain.Entities;
 
 namespace Nexora.Application.Users.Commands.UploadAvatar;
 
-public class UploadAvatarHandler
+public class AvatarService
 {
     private readonly IUserBlobStorage _userUserBlobStorage;
     private readonly IApplicationDbContext _context;
-    public UploadAvatarHandler(IUserBlobStorage userUserBlobStorage, IApplicationDbContext context)
+    public AvatarService(IUserBlobStorage userUserBlobStorage, IApplicationDbContext context)
     {
         _userUserBlobStorage = userUserBlobStorage;
         _context = context;

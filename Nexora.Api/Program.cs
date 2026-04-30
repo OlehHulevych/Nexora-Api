@@ -44,7 +44,7 @@ builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<Ap
 builder.Services.AddScoped<IJwtService, JwtTokenHandler>();
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IUserBlobStorage, UserBlobStorageService>();
-builder.Services.AddScoped<UploadAvatarHandler>();
+builder.Services.AddScoped<AvatarService>();
 builder.Services.AddScoped<UpdateUserService>();
 builder.Services.Configure<BlobStorageOptions>(builder.Configuration.GetSection(BlobStorageOptions.Section));
 builder.Services.AddScoped<RegisterUser>();

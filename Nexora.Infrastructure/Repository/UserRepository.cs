@@ -21,31 +21,27 @@ public class UserRepository:IUserRepository
 {
     private readonly RegisterUser _registerUserHandler;
     private readonly LoginUser _loginUserHandler;
-    private readonly UpdateUserService _updateUserService;
     private readonly IHttpContextAccessor _context;
     private readonly ValidationErrors _validationErrorHandler;
     private readonly IValidator<RegisterUserCommand> _validator;
     private readonly IValidator<LoginUserCommand> _loginValidator;
-    private readonly GettingUsersService _gettingUsersService;
-    private readonly Promote _promoteUserService;
-    private readonly DeleteUser _deleteUser;
     private readonly IGoogleAuthService _googleAuthService;
+    private readonly IUserService _userService;
 
     
 
-    public UserRepository(IHttpContextAccessor context, RegisterUser registerUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, IValidator<LoginUserCommand> loginValidator, UpdateUserService updateUserService,GettingUsersService gettingUsersService, Promote promoteUserService, DeleteUser deleteUser, IGoogleAuthService googleAuthService)
+    public UserRepository(IHttpContextAccessor context, RegisterUser registerUser, LoginUser loginUserHandler, IValidator<RegisterUserCommand> validator, ValidationErrors validationErrorHandler, 
+        IValidator<LoginUserCommand> loginValidator, IGoogleAuthService googleAuthService, IUserService userService)
     {
         _registerUserHandler = registerUser;
         _loginUserHandler = loginUserHandler;
         _validator = validator;
-        _updateUserService = updateUserService;
         _validationErrorHandler = validationErrorHandler;
         _loginValidator = loginValidator;
         _context = context;
-        _gettingUsersService = gettingUsersService;
-        _promoteUserService = promoteUserService;
-        _deleteUser = deleteUser;
         _googleAuthService = googleAuthService;
+        _userService = userService;
+
 
     }
 
@@ -108,7 +104,7 @@ public class UserRepository:IUserRepository
 
     public async Task<IResult> UpdateUser(UpdateUserCommand updateUserCommand)
     {
-        UpdateResponse updateResponse = await _updateUserService.UpdateUserHandler(updateUserCommand);
+        UpdateResponse updateResponse = await _userService.UpdateUserHandler(updateUserCommand);
         if (updateResponse.User.Equals(null))
         {
             return Results.BadRequest("Failed to update user");
@@ -130,7 +126,7 @@ public class UserRepository:IUserRepository
 
     public async Task<IResult> GetAllUsers(AllUserCommand request)
     {
-        AllUserResponse response = await _gettingUsersService.getUsersHandler(request);
+        AllUserResponse response = await _userService.getUsersHandler(request);
         if (response.Equals(null))
         {
             return Results.BadRequest("Failed to retrieve the users");
@@ -146,13 +142,13 @@ public class UserRepository:IUserRepository
             return Results.BadRequest("The user id is not found or empty");
         }
 
-        UserDto user = await _promoteUserService.promoteUserHandler(userId);
+        UserDto user = await _userService.promoteUserHandler(userId);
         return Results.Ok(new { message = "The user is promoted", user = user });
     }
 
     public async Task<IResult> BanUserHandler(string id)
     {
-        var result = await _deleteUser.BanUserHandler(id);
+        var result = await _userService.BanUserHandler(id);
         if (!result)
         {
             return Results.BadRequest("Failed to ban User");
@@ -163,7 +159,7 @@ public class UserRepository:IUserRepository
 
     public async Task<IResult> UnBanUserHandler(string id)
     {
-        var result = await _deleteUser.BanUserHandler(id);
+        var result = await _userService.BanUserHandler(id);
         if (!result)
         {
             return Results.BadRequest("Failed to ban User");
@@ -174,7 +170,7 @@ public class UserRepository:IUserRepository
 
     public async Task<IResult> DeleteUserHandler(string id)
     {
-        var result = await _deleteUser.BanUserHandler(id);
+        var result = await _userService.BanUserHandler(id);
         if (!result)
         {
             return Results.BadRequest("Failed to ban User");

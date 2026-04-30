@@ -20,15 +20,15 @@ public class RegisterUser
     private ILogger<RegisterUser> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IApplicationDbContext _context;
-    private readonly UploadAvatarHandler _uploadAvatar;
+    private readonly AvatarService _avatar;
   
 
-    public RegisterUser( IApplicationDbContext context, UserManager<ApplicationUser> userManager, UploadAvatarHandler uploadAvatar, ILogger<RegisterUser> logger)
+    public RegisterUser( IApplicationDbContext context, UserManager<ApplicationUser> userManager, AvatarService avatar, ILogger<RegisterUser> logger)
     {
         _logger = logger;
         _userManager = userManager;
         _context = context;
-        _uploadAvatar = uploadAvatar;
+        _avatar = avatar;
     }
     
     public async Task<RegisterUserResponse> RegisterUserService(RegisterUserCommand request)
@@ -69,7 +69,7 @@ public class RegisterUser
                 throw new Exception("Failed to load role to user");
             }
             UploadAvatarResponse avatarResponse =
-                await _uploadAvatar.UploadAvatar(new UploadAvatarCommand(user.Id, user, request.Avatar), request.FirstName+"_"+request.LastName);
+                await _avatar.UploadAvatar(new UploadAvatarCommand(user.Id, user, request.Avatar), request.FirstName+"_"+request.LastName);
             if (avatarResponse.uri.IsNullOrEmpty())
             {
                 throw new Exception("Register failed during the uploading avatar");
