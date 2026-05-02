@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Application.Users.Commands.GettingUsers;
@@ -14,11 +15,11 @@ public interface IUserService
 {
 
 
-    public Task<UserDto> promoteUserHandler(string userId);
-    public  Task<UpdateResponse> UpdateUserHandler(UpdateUserCommand request);
-    public Task<bool> BanUserHandler(String id);
-    public Task<bool> UnBanUserHandler(String id);
-    public Task<bool> DeleteUserHandler(string id);
-    public Task<AllUserResponse> getUsersHandler(AllUserCommand request);
+    public Task<IResult> PromoteUserHandler(string userId);
+    public  Task<IResult> UpdateUserHandler(UpdateUserCommand request);
+    public Task<IResult> BanUserHandler(String id);
+    public Task<IResult> UnBanUserHandler(String id);
+    public Task<IResult> DeleteUserHandler(string id);
+    public Task<IResult> GetUsersHandler(AllUserCommand request);
 
 }

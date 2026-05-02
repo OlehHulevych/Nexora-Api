@@ -74,7 +74,7 @@ public class UserController:ControllerBase
         {
             return Results.BadRequest(new { Message = "Ivalid id" });
         }
-        return await _userService.RetrieveUserHandler(Id);
+        return await _authService.RetrieveUser(Id);
     }
     /// <summary>
     /// Update of  User.
@@ -84,14 +84,14 @@ public class UserController:ControllerBase
     [HttpPost]
     public async Task<IResult> UpdateUser([FromForm]UpdateUserCommand userCommand)
     {
-        return await _userRepository.UpdateUser(userCommand);
+        return await _userService.UpdateUserHandler(userCommand);
     }
     [Authorize]
     [Route("/get")]
     [HttpPost]
     public async Task<IResult> GetUsers([FromQuery] AllUserCommand request)
     {
-        return await _userRepository.GetAllUsers(request);
+        return await _userService.GetUsersHandler(request);
     }
     
     [Authorize(Roles = RoleNames.Admin)]
@@ -99,28 +99,28 @@ public class UserController:ControllerBase
     [HttpPatch]
     public async Task<IResult> PromoteUser([FromQuery] string userId)
     {
-        return await _userRepository.PromoteUser(userId);
+        return await _userService.PromoteUserHandler(userId);
     }
     [Authorize(Roles = RoleNames.Admin)]
     [Route("/ban")]
     [HttpPatch]
     public async Task<IResult> BanUser([FromQuery] string userId)
     {
-        return await _userRepository.BanUserHandler(userId);
+        return await _userService.BanUserHandler(userId);
     }
     [Authorize(Roles = RoleNames.Admin)]
     [Route("/unban")]
     [HttpPatch]
     public async Task<IResult> UnBanUser([FromQuery] string userId)
     {
-        return await _userRepository.UnBanUserHandler(userId);
+        return await _userService.UnBanUserHandler(userId);
     }
     [Authorize(Roles = RoleNames.Admin)]
     [Route("/delete")]
     [HttpDelete]
     public async Task<IResult> DeleteUser([FromQuery] string userId)
     {
-        return await _userRepository.DeleteUserHandler(userId);
+        return await _userService.DeleteUserHandler(userId);
     }
     
     

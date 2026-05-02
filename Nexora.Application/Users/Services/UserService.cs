@@ -27,7 +27,7 @@ public class UserService:IUserService
         _avatarService = avatarService;
     }
     
-    public async Task<UserDto> promoteUserHandler(string userId)
+    public async Task<IResult> PromoteUserHandler(string userId)
     {
         ApplicationUser? user = await _userManager.Users.Include(u=>u.Address)
             .Include(u=>u.Avatar)
@@ -45,10 +45,10 @@ public class UserService:IUserService
 
         UserDto userDto = new UserDto(user.Id, user.FirstName + " " + user.LastName, user.Email, user.Avatar.Uri,
             user.Address.Line1);
-        return userDto;
+        return Results.Ok(new {message = "user is fetched", data = userDto});
     }
     
-    public async Task<UpdateResponse> UpdateUserHandler(UpdateUserCommand request)
+    public async Task<IResult> UpdateUserHandler(UpdateUserCommand request)
     {
         var user = await _userManager.Users.Include(u=>u.Address).Include(u=>u.Avatar).FirstOrDefaultAsync(u=>u.Id == request.Id);
         Console.WriteLine("This is user: "+user);
@@ -77,34 +77,34 @@ public class UserService:IUserService
         }
 
         await _context.SaveChangesAsync();
-         
-        return new UpdateResponse(new UserDto(user.Id, user.FirstName + " " + user.LastName, user.Email,
-            user.Avatar.Uri, user.Address.Line1));
+
+        return Results.Ok(new {message = "The user is updated", data = new UpdateResponse(new UserDto(user.Id, user.FirstName + " " + user.LastName, user.Email,
+            user.Avatar.Uri, user.Address.Line1))});
     }
-    public async Task<bool> BanUserHandler(String id)
+    public async Task<IResult> BanUserHandler(String id)
     {
         var user = await _userManager.FindByIdAsync(id);
         user.Banned = true;
         if (user.Banned)
         {
-            return true;
+            return Results.Ok(new {message = "The user is banned"});
         }
 
-        return false;
+        return Results.BadRequest(new {message = "Failed to ban user"});;
     }
-    public async Task<bool> UnBanUserHandler(String id)
+    public async Task<IResult> UnBanUserHandler(String id)
     {
         var user = await _userManager.FindByIdAsync(id);
         user.Banned = false;
         if (!user.Banned)
         {
-            return true;
+            return Results.Ok(new {message = "The user is unbanned"});
         }
 
-        return false;
+        return Results.BadRequest(new {message = "Failed to unban user"});
     }
 
-    public async Task<bool> DeleteUserHandler(string id)
+    public async Task<IResult> DeleteUserHandler(string id)
     {
         ApplicationUser? user = await _userManager.FindByIdAsync(id);
         if (user == null)
@@ -112,10 +112,10 @@ public class UserService:IUserService
             throw new BadHttpRequestException("Failed to find user by id");
         }
         var result = await _userManager.DeleteAsync(user);
-        return result.Succeeded;
+        return Results.BadRequest(new {message = "Failed to find user"});
     }
     
-    public async Task<AllUserResponse> getUsersHandler(AllUserCommand request)
+    public async Task<IResult> GetUsersHandler(AllUserCommand request)
     {
         IQueryable<ApplicationUser> users;
         if (!request.role.IsNullOrEmpty())
@@ -134,7 +134,7 @@ public class UserService:IUserService
         List<UserDto> userList = await users.OrderBy(u => u.CreatedAt).Skip((request.currentPage - 1) * 10).Take(10)
             .Select(u=> new UserDto(u.Id, u.FirstName + " "+u.LastName, u.Email, u.Avatar.Uri, u.Address.Line1))
             .ToListAsync();
-        return new AllUserResponse(userList, request.currentPage, length / 10);
+        return Results.Ok(new {message = "Users are retrieved", data = new AllUserResponse(userList, request.currentPage, length / 10)});
 
     }
 }
