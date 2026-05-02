@@ -34,7 +34,7 @@ public class AuthService:IAuthService
         _jwtService = jwtService;
     }
     
-    public async Task<RegisterUserResponse> RegisterUserService(RegisterUserCommand request)
+    public async Task<IResult> RegisterUserService(RegisterUserCommand request)
     {
             bool userExist = await CheckIfuserExistByEmail(request.Email);
             if (userExist)
@@ -87,39 +87,44 @@ public class AuthService:IAuthService
             }
             RegisterUserResponse registerUserResult = new RegisterUserResponse(user.Id, user.Email, user.FirstName, user.LastName, address.Line1);
             _logger.LogInformation("The user is registered");
-            return registerUserResult;
+            return Results.Ok(new {message = "The user was registered", data = registerUserResult});
 
     }
     
-    public async Task<LoginResponse> LoginUserHandler(LoginUserCommand request)
+    public async Task<IResult> LoginUserHandler(LoginUserCommand? request)
     {
-        if (request.email.IsNullOrEmpty() || request.password.IsNullOrEmpty())
+        if (request != null && (request.email.IsNullOrEmpty() || request.password.IsNullOrEmpty()))
         {
             throw new ValidationException("Required data is missing");
         }
 
-        var user = await _userManager.FindByEmailAsync(request.email);
-        if (user == null)
+        if (request != null)
         {
-            throw new UserIsNotFoundException();
+            var user = await _userManager.FindByEmailAsync(request.email);
+            if (user == null)
+            {
+                throw new UserIsNotFoundException();
+            }
+
+            var result = await _userManager.CheckPasswordAsync(user, request.password);
+            if (!result)
+            {
+                throw new PasswordIsNotMatched();
+            }
+
+            string? token = await _jwtService.CreateToken(user);
+            if (token.IsNullOrEmpty())
+            {
+                throw new BadHttpRequestException("Failed during creating token");
+            }
+
+            if (token != null) return Results.Ok(new { message = "The user was logged", data = new LoginResponse(token) });
         }
 
-        var result = await _userManager.CheckPasswordAsync(user, request.password);
-        if (!result)
-        {
-            throw new PasswordIsNotMatched();
-        }
-
-        var token = await _jwtService.CreateToken(user);
-        if (token.IsNullOrEmpty())
-        {
-            throw new BadHttpRequestException("Failed during creating token");
-        }
-
-        return new LoginResponse(token);
+        return Results.BadRequest(new {messaage = "failed to register user"});
     }
 
-    public async Task<UserDto> RetrieveUser(string id)
+    public async Task<IResult> RetrieveUser(string id)
     {
         if (id.IsNullOrEmpty())
         {
@@ -132,9 +137,14 @@ public class AuthService:IAuthService
             throw new UserIsNotFoundException();
         }
 
-        return new UserDto(user.Id, user.FirstName + " " + user.LastName, user.Email, user.Avatar.Uri,
-            user.Address?.Line1 + ", "+ user.Address?.City + ", "+user.Address?.Country);
-
+        if (user.Email != null)
+            return Results.Ok(new
+            {
+                message = "User is fetched", data = new UserDto(user.Id, user.FirstName + " " + user.LastName,
+                    user.Email, user.Avatar?.Uri,
+                    user.Address?.Line1 + ", " + user.Address?.City + ", " + user.Address?.Country)
+            });
+        return Results.BadRequest(new {message = "Failed to retrieve user"});
     }
 
     private async Task<bool> CheckIfuserExistByEmail(string email)

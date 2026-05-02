@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Nexora.Application.Interfaces.Config;
 using Nexora.Application.Interfaces.JwtService;
-using Nexora.Application.Users.Commands.Login;
 using Nexora.Domain.Constants;
 using Nexora.Domain.Exceptions;
 
@@ -16,23 +15,24 @@ namespace Nexora.Application.Users.Services;
 
 public class GoogleAuthService:IGoogleAuthService
 {
-    
+    private readonly IHttpContextAccessor _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IGoogleConfig _googleConfig;
     private readonly IJwtService _jwtService;
     private readonly ILogger<GoogleAuthService> _logger;
 
-    public GoogleAuthService( UserManager<ApplicationUser> userManager, IGoogleConfig googleConfig, ILogger<GoogleAuthService> logger, IJwtService jwtService)
+    public GoogleAuthService( UserManager<ApplicationUser> userManager, IGoogleConfig googleConfig, ILogger<GoogleAuthService> logger, IJwtService jwtService, IHttpContextAccessor context)
     {
         _userManager = userManager;
         _googleConfig = googleConfig;
         _logger = logger;
         _jwtService = jwtService;
+        _context = context;
     }
-    public async Task<UserDto?> GoogleSignIn(GoogleSignInVM? model)
+    public async Task<IResult> GoogleSignIn(GoogleSignInVM? model)
     {
-        GoogleJsonWebSignature.Payload payload = new();
-        payload = await GoogleJsonWebSignature.ValidateAsync(model.IdToken,
+        GoogleJsonWebSignature.Payload payload;
+        payload = await GoogleJsonWebSignature.ValidateAsync(model?.IdToken,
             new GoogleJsonWebSignature.ValidationSettings
             {
                 Audience = new[] { _googleConfig.ClientId }
@@ -62,13 +62,17 @@ public class GoogleAuthService:IGoogleAuthService
             LoginNames.Google,
             payload.Subject,
             LoginNames.Google));
-        return new UserDto(user.Id, user.FirstName+ " "+user.LastName,user.Email);
+        return Results.Ok(new
+        {
+            message = "The user logged in",
+            data = new UserDto(user.Id, user.FirstName + " " + user.LastName, user.Email)
+        });
     }
 
-    public async Task<LoginResponse> GoogleLogIn(GoogleSignInVM? model)
+    public async Task<IResult> GoogleLogIn(GoogleSignInVM? model)
     {
-        GoogleJsonWebSignature.Payload payload = new();
-        payload = await GoogleJsonWebSignature.ValidateAsync(model.IdToken, new GoogleJsonWebSignature.ValidationSettings
+        GoogleJsonWebSignature.Payload payload;
+        payload = await GoogleJsonWebSignature.ValidateAsync(model?.IdToken, new GoogleJsonWebSignature.ValidationSettings
         {
             Audience = new [] {_googleConfig.ClientId}
         });
@@ -76,6 +80,15 @@ public class GoogleAuthService:IGoogleAuthService
         if (user == null) throw new NotFoundException(nameof(ApplicationUser), payload.Email);
         var token = await _jwtService.CreateToken(user);
         if (token == null) throw new AuthenticationException("Failed to create token");
-        return new LoginResponse(token);
+        var cookieOptions = new CookieOptions()
+        {
+            IsEssential = true,
+            Expires = DateTime.Now.AddDays(7),
+            Secure = true,
+            HttpOnly = false,
+            SameSite = SameSiteMode.None
+        };
+        _context.HttpContext?.Response.Cookies.Append("token",token, cookieOptions);
+        return Results.Ok(new {message = "The user is logged in"});
     }
 }

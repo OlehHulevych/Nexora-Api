@@ -2,12 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Cart.Requests;
 using Nexora.Application.Interfaces.Context;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Domain.Constants;
 using Nexora.Domain.Exceptions;
 
 namespace Nexora.Application.Users.Services;
 
-public class CartService
+public class CartService:ICartService
 {
     private readonly IApplicationDbContext _context;
 

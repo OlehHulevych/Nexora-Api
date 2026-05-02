@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Users.Commands.Login;
 using Nexora.Application.Users.Commands.Register;
@@ -11,9 +12,9 @@ namespace Nexora.Application.Interfaces.Services;
 
 public interface IAuthService
 {
-    public Task<RegisterUserResponse> RegisterUserService(RegisterUserCommand request);
+    public Task<IResult> RegisterUserService(RegisterUserCommand request);
 
-    public Task<LoginResponse> LoginUserHandler(LoginUserCommand request);
+    public Task<IResult> LoginUserHandler(LoginUserCommand? request);
 
-    public Task<UserDto> RetrieveUser(string id);
+    public Task<IResult> RetrieveUser(string id);
 }

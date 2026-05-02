@@ -3,68 +3,34 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Domain.Entities;
 using Nexora.Infrastructure.Context;
-using Nexora.Infrastructure.JWT;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using Nexora.Api.Configs;
 using Nexora.Api.ExceptionHandler;
-using Nexora.Application.Category.Services;
+using Nexora.Application;
 using Nexora.Application.Interfaces.Config;
-using Nexora.Application.Interfaces.Context;
-using Nexora.Application.Interfaces.IBlobStorage;
-using Nexora.Application.Interfaces.JwtService;
-using Nexora.Application.Interfaces.Repositories;
-using Nexora.Application.Interfaces.Services;
-using Nexora.Application.Product.Services;
-using Nexora.Application.Review.Services;
-using Nexora.Application.Users.Commands.GettingUsers;
-using Nexora.Application.Users.Commands.Login;
 using Nexora.Application.Users.Commands.Register;
-using Nexora.Application.Users.Commands.Update;
-using Nexora.Application.Users.Commands.UploadAvatar;
-using Nexora.Application.Users.Commands.Validation;
 using Nexora.Application.Users.Commands.Validation.Login;
-using Nexora.Application.Users.Services;
-using Nexora.Infrastructure.Repository;
-using Nexora.Infrastructure.Storage;
-
-
+using Nexora.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options=>options.UseNpgsql(connectionString));
-builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
-builder.Services.AddScoped<IJwtService, JwtTokenHandler>();
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddSingleton<IUserBlobStorage, UserBlobStorageService>();
-builder.Services.AddScoped<AvatarService>();
-builder.Services.Configure<BlobStorageOptions>(builder.Configuration.GetSection(BlobStorageOptions.Section));
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IProductBlobStorage, ProductBlobStorageService>();
-builder.Services.AddScoped<CategoryRepository>();
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<ValidationErrors>();
-
-builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
-builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
-builder.Services.AddScoped<IReviewService, ReviewService>();
+IConfiguration configuration = builder.Configuration;
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(configuration);
+
+
 var googleConfig = builder.Configuration.GetSection("Google").Get<GoogleConfig>();
 if (googleConfig != null) builder.Services.AddSingleton<IGoogleConfig>(googleConfig);
-builder.Services.AddScoped<ICartRepository, CartRepository>();
-builder.Services.AddScoped<CartService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -86,8 +52,8 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddAuthentication().AddGoogle(options =>
 {
-    options.ClientId = builder.Configuration["Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+    options.ClientId = builder.Configuration["Google:ClientId"] ?? string.Empty;
+    options.ClientSecret = builder.Configuration["Google:ClientSecret"] ?? string.Empty;
 });
 builder.Services.AddAuthorization();
 
@@ -132,37 +98,26 @@ builder.Services.AddSwaggerGen(options =>
     });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-   
 });
 builder.Services.AddValidatorsFromAssemblyContaining<LoginValidation>();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});;
-
-
-
+});
 var app = builder.Build();
 await EnsureRolesAsync(app);
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseExceptionHandler(o=>{});
+app.UseExceptionHandler(_=>{});
 app.UseHttpsRedirection();
-
 app.MapControllers();
-
-
-
-
 app.Run();
-async Task EnsureRolesAsync(WebApplication app)
+async Task EnsureRolesAsync(WebApplication application)
 {
-    using var scope = app.Services.CreateScope();
+    using var scope = application.Services.CreateScope();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     string[] roles = { "USER", "ADMIN" };
     foreach (var role in roles)
@@ -173,5 +128,3 @@ async Task EnsureRolesAsync(WebApplication app)
         }
     }
 }
-
-

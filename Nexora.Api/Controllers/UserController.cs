@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces.Repositories;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Users.Commands.GettingUsers;
 using Nexora.Application.Users.Commands.Login;
 using Nexora.Application.Users.Commands.Register;
@@ -16,13 +17,16 @@ namespace Nexora.Api.Controllers;
 [Route("api/user")]
 public class UserController:ControllerBase
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IAuthService _authService ;
+    private readonly IUserService _userService;
+    private readonly IGoogleAuthService _googleAuthService;
     
 
-    public UserController(IUserRepository userRepository)
+    public UserController(IAuthService authService, IUserService userService, IGoogleAuthService googleAuthService)
     {
-        _userRepository = userRepository;
-       
+        _authService = authService;
+        _userService = userService;
+        _googleAuthService = googleAuthService;
     }
     /// <summary>
     /// Registration of  User.
@@ -33,7 +37,7 @@ public class UserController:ControllerBase
     [HttpPost]
     public async Task<IResult> AddUserHandler([FromForm] RegisterUserCommand request)
     {
-        return await _userRepository.AddUser(request);
+        return await _authService.RegisterUserService(request);
     }
     /// <summary>
     /// Login of  User.
@@ -43,21 +47,21 @@ public class UserController:ControllerBase
     [HttpPost]
     public async Task<IResult> LoginUserHandler([FromForm] LoginUserCommand? request)
     {
-        return await _userRepository.LoginUser(request);
+        return await _authService.LoginUserHandler(request);
     }
 
     [Route("/register/google")]
     [HttpPost]
     public async Task<IResult> RegisterThroughGoogle([FromBody] GoogleSignInVM model)
     {
-        return await _userRepository.AddGoogleUser(model);
+        return await _googleAuthService.GoogleSignIn(model);
     }
 
     [Route("/login/google")]
     [HttpPost]
     public async Task<IResult> LoginThroughGoogle([FromBody] GoogleSignInVM model)
     {
-        return await _userRepository.LoginUser(null,model);
+        return await _googleAuthService.GoogleLogIn(model);
     }
     
     [Authorize]
@@ -70,7 +74,7 @@ public class UserController:ControllerBase
         {
             return Results.BadRequest(new { Message = "Ivalid id" });
         }
-        return await _userRepository.RetrieveUserHandler(Id);
+        return await _userService.RetrieveUserHandler(Id);
     }
     /// <summary>
     /// Update of  User.
