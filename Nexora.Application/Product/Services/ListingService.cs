@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Interfaces;
-using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
+using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Product.Command;
-using Nexora.Application.Product.Responses;
 using Nexora.Domain.DTOs;
 using Nexora.Domain.Exceptions;
 
@@ -15,20 +13,20 @@ namespace Nexora.Application.Product.Services;
 public class ListingService:IListingService
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IApplicationDbContext _context;
     private readonly IProductBlobStorage _storage;
     private readonly ICategoryService _categoryService;
+    private readonly IProductRepository _productRepository;
     
 
-    public ListingService(UserManager<ApplicationUser> userManager, IApplicationDbContext context, IProductBlobStorage storage, ICategoryService categoryService)
+    public ListingService(UserManager<ApplicationUser> userManager,  IProductBlobStorage storage, ICategoryService categoryService, IProductRepository productRepository)
     {
         _userManager = userManager;
-        _context = context;
         _storage = storage;
         _categoryService = categoryService;
+        _productRepository = productRepository;
     }
     
-    public async Task<Listing> AddProduct(CreateProductCommand data, string id)
+    public async Task<IResult> AddProduct(CreateProductCommand data, string id)
     {
         if (data==null)
         {
@@ -42,7 +40,7 @@ public class ListingService:IListingService
         }
         Console.WriteLine(category.Id);
         ApplicationUser? user = await _userManager.FindByIdAsync(id);
-        Console.WriteLine(user.Id);
+        Console.WriteLine(user?.Id);
         if (user == null)
         {
             throw new BadHttpRequestException("Failed to get user");
@@ -59,66 +57,67 @@ public class ListingService:IListingService
             Seller = user
         };
         Console.WriteLine(product.Name);
-        await _context.Listings.AddAsync(product);
-        await _context.SaveChangesAsync();
+        var createdId = await _productRepository.CreateProduct(product);
+        if (createdId == Guid.Empty)
+        {
+            throw new Exception("Failed to create Exception");
+        }
         IReadOnlyList<ProductImage> photos = await _storage.UploadAsync(data.Photos, $"listings/{data.Name}", product.Id, product);
         if (photos.Count < 1)
         {
             throw new Exception("Failed to upload photos");
         }
-
-        product.Images = photos.ToList();
-        return product;
         
-
+        product.Images = photos.ToList();
+        return Results.Ok(new {message = "The listing was created"});
     } 
     
-    public async Task<GetProductResponse> GetProductsService(GetProductsCommand request)
+    public async Task<IResult> GetProductsService(GetProductsCommand request)
     {
         if (request.Equals(null))
         {
             throw new BadHttpRequestException("There is no any data for getting listings. Please try again");
         }
 
-        IQueryable<Listing> queries =  _context.Listings.Include(l => l.Category).Include(l=>l.Images).Include(l=>l.Reviews).ThenInclude(r=>r.Author).Include(l=>l.Category).AsQueryable();
-        int length = await _context.Listings.CountAsync();
-        List<ProductDto> listings =  await queries.OrderBy(l=>l.CreatedAt).Skip((request.page-1)*10).Take(10)
-            .Select(l=> new ProductDto(l.Name,l.Description,l.Price,l.StockQuantity,l.isActive, l.SellerId,l.Category.Name,l.Images.Select(i=>i.Url),l.Reviews
-                .Select(r=>new ReviewDto(r.Author.FirstName + " "+r.Author.LastName,r.Rating, r.Comment )))).ToListAsync();
-        if (listings.Count < 1)
+        var response = await _productRepository.GetAllProduct(request);
+        if (response == null)
         {
             throw new BadHttpRequestException("Failed to fetch listings");
         }
 
-        return new GetProductResponse(listings,request.page,length/10);
+        return Results.Ok(new {message = "Listings are fetched", data = response});
+
+
 
     }
 
-    public async Task<ProductDto> GetProductById(Guid id)
+    public async Task<IResult> GetProductById(Guid id)
     {
         if (id.Equals(null))
         {
             throw new BadHttpRequestException("There is no id for getting Product");
         }
 
-        var listing = await _context.Listings.Include(l => l.Category).Include(l=>l.Reviews)
-            .Include(l => l.Images).FirstOrDefaultAsync(l => l.Id.Equals(id));
+        
+        var listing = await _productRepository.GetProductById(id);
         if (listing == null)
         {
             throw new BadHttpRequestException("There is no listing");
         }
-        return new ProductDto(listing.Name, listing.Description, listing.Price, listing.StockQuantity, listing.isActive, listing.SellerId,listing.Category.Name, listing.Images.Select(photo=>photo.Url),listing.Reviews.Select(r=>new ReviewDto(r.Author.FirstName + " "+r.Author.LastName,r.Rating, r.Comment)));
+        return Results.Ok(new { message = "Retrieved sucessfully", data =new ProductDto(listing.Name, listing.Description, listing.Price, listing.StockQuantity, listing.isActive, listing.SellerId,listing.Category?.Name, 
+            listing.Images.Select(photo=>photo.Url),listing.Reviews.Select(r=>new ReviewDto(r.Author?.FirstName + " "+r.Author?.LastName,
+                r.Rating, r.Comment)))  });
     }
     
-    public async Task<Guid> UpdateProductHandler(UpdateProductCommand request)
+    public async Task<IResult> UpdateProductHandler(UpdateProductCommand request)
     {
-        var product = await _context.Listings.FirstOrDefaultAsync(l => l.Id == request.listingId);
-        if (product is null)
+        Listing? product = await _productRepository.GetProductById(request.listingId);
+        if (product == null)
         {
-            throw new NotFoundException(nameof(Product), request.listingId);
+            throw new NotFoundException(nameof(Listing), request.listingId);
         }
 
-        product.Update(request.Name, request.Description, request.Price, request.StockQuantity);
+        product?.Update(request.Name, request.Description, request.Price, request.StockQuantity);
         if (request.PhotosForDelete!=null && request.PhotosForDelete.Count>0)
         {
             var result = await _storage.DeleteForEditing(request.PhotosForDelete);
@@ -127,13 +126,16 @@ public class ListingService:IListingService
 
         if (request.Photos != null && request.Photos.Count>0)
         {
-            var result = await _storage.UploadAsync(request.Photos, $"listings/{product.Name}", product.Id, product);
+            var result = await _storage.UploadAsync(request.Photos, $"listings/{product?.Name}", product.Id, product);
             if (result.Count < 0) throw new BlobStorageException("Failed to upload new images for listing");
         }
 
-        _context.Listings.Update(product);
-        await _context.SaveChangesAsync();
-        return product.Id;
+        return Results.Ok(new { message = "The listing was updated", data = product?.Id });
+    }
+
+    public async Task<IResult?> RemoveListing(Guid listingId, string userId)
+    {
+        return await _productRepository.DeleteProduct(listingId, userId);
     }
 
 

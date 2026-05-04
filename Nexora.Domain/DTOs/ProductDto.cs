@@ -2,7 +2,7 @@
 
 public record ProductDto(
     string Name,
-    string Description,
+    string? Description,
     decimal Price,
     int? StockQuantity,
     bool isActive,

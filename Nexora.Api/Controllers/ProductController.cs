@@ -1,20 +1,19 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Nexora.Application.Interfaces.Repositories;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Product.Command;
-using Nexora.Infrastructure.Repository;
 
 namespace Nexora.Api.Controllers;
 [ApiController]
 [Route("api/listing")]
 public class ProductController:ControllerBase
 {
-    private readonly IProductRepository _productRepository;
+    private readonly IListingService _listingService;
 
-    public ProductController(IProductRepository productRepository)
+    public ProductController(IListingService listingService)
     {
-        _productRepository = productRepository;
+        _listingService = listingService;
     }
     [HttpPost]
     [Authorize]
@@ -27,32 +26,32 @@ public class ProductController:ControllerBase
         {
             return Results.Unauthorized();
         }
-        return await _productRepository.CreateProduct(data, id);
+        return await _listingService.AddProduct(data, id);
     }
 
     [HttpGet]
     public async Task<IResult> GetListings([FromQuery] GetProductsCommand command)
     {
-        return await _productRepository.GetAllProduct(command);
+        return await _listingService.GetProductsService(command);
     }
     
     [Route("one")]
     [HttpGet]
     public async Task<IResult> GetListingById([FromQuery] Guid id)
     {
-        return await _productRepository.GetProductById(id);
+        return await _listingService.GetProductById(id);
     }
     
     [Authorize]
     [HttpDelete]
-    public async Task<IResult> Delete([FromQuery] Guid id)
+    public async Task<IResult?> Delete([FromQuery] Guid id)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
         {
             return Results.Unauthorized();
         }
-        return await _productRepository.DeleteProduct(id, userId);
+        return await _listingService.RemoveListing(id, userId);
     }
 
     [Authorize]
@@ -61,7 +60,7 @@ public class ProductController:ControllerBase
     
     public async Task<IResult> Update([FromForm] UpdateProductCommand command)
     {
-        return await _productRepository.UpdateProduct(command);
+        return await _listingService.UpdateProductHandler(command);
     }
     
     
