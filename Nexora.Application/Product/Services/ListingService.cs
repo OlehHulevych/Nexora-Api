@@ -14,16 +14,16 @@ public class ListingService:IListingService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IProductBlobStorage _storage;
-    private readonly ICategoryService _categoryService;
     private readonly IProductRepository _productRepository;
+    private readonly ICategoryRepository _categoryRepository;
     
 
-    public ListingService(UserManager<ApplicationUser> userManager,  IProductBlobStorage storage, ICategoryService categoryService, IProductRepository productRepository)
+    public ListingService(UserManager<ApplicationUser> userManager, ICategoryRepository categoryRepository,  IProductBlobStorage storage, IProductRepository productRepository)
     {
         _userManager = userManager;
         _storage = storage;
-        _categoryService = categoryService;
         _productRepository = productRepository;
+        _categoryRepository = categoryRepository;
     }
     
     public async Task<IResult> AddProduct(CreateProductCommand data, string id)
@@ -33,7 +33,7 @@ public class ListingService:IListingService
             throw new BadHttpRequestException("There is no data for creating ad");
         }
 
-        Domain.Entities.Category category = await _categoryService.FindByName(data.Category);
+        Domain.Entities.Category category = await _categoryRepository.GetCategory(data.Category);
         if (category == null)
         {
             throw new BadHttpRequestException("Failed to get category");

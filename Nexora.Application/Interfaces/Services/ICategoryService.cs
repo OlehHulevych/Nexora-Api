@@ -1,12 +1,13 @@
-﻿using Nexora.Application.Category;
+﻿using Microsoft.AspNetCore.Http;
+using Nexora.Application.Category;
 
 namespace Nexora.Application.Interfaces;
 
 public interface ICategoryService
 {
-    public Task<Domain.Entities.Category> AddCategory(CategoryCommand data);
+    public Task<IResult> AddCategory(CategoryCommand data);
 
-    public  Task<Domain.Entities.Category> FindByName(string name);
+    public  Task<IResult> FindByName(string? name);
 
-    public Task<List<Domain.Entities.Category>> GetAll();
+    public Task<IResult> GetAll();
 }

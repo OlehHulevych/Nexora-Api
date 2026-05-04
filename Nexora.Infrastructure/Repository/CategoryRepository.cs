@@ -1,53 +1,52 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Category;
 using Nexora.Application.Category.Services;
+using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.Repositories;
+using Nexora.Domain.Entities;
+using Nexora.Domain.Exceptions;
 
 namespace Nexora.Infrastructure.Repository;
 
 public class CategoryRepository:ICategoryRepository
 {
-    private readonly CategoryService _categoryService;
 
-    public CategoryRepository(CategoryService categoryService)
+    private readonly IApplicationDbContext _context;
+    
+    public CategoryRepository(IApplicationDbContext context)
     {
-        _categoryService = categoryService;
+        _context = context;
     }
 
-    public async Task<IResult> AddCategory(CategoryCommand data)
+    public async Task<Guid> AddCategory(Category category)
     {
-        var response = await _categoryService.AddCategory(data);
+        var response = await _context.Categories.AddAsync(category);
+        await _context.SaveChangesAsync();
         if (response.Equals(null))
         {
-            return Results.BadRequest("Failed to Create new category");
+            throw new BadHttpRequestException("Failed to create new category");
         }
 
-        return Results.Ok(response);
+        return response.Entity.Id;
+    }
+    
+
+    public async Task<Category?> GetCategory(string name)
+    {
+        var category = await _context.Categories.FirstOrDefaultAsync(c=>c.Name==name);
+        if (category != null && category.Name.IsNullOrEmpty())
+        {
+            throw new NotFoundException(nameof(Category), name);
+        }
+
+        return category;      
     }
 
-    public async Task<IResult> GetCategory(string? name)
+    public async Task<List<Category>?> GetCategories()
     {
-        
-        if (name != null)
-        {
-            var category = await _categoryService.FindByName(name);
-            if (category.Name.IsNullOrEmpty())
-            {
-                return Results.BadRequest("Failed to get category");
-            }
-
-            return Results.Ok(new {message="Getting category was successfully", category = category});
-        }
-
-        var categories = await _categoryService.GetAll();
-        if (categories.IsNullOrEmpty())
-        {
-            return Results.BadRequest("Failed to get categories");
-        }
-
-        return Results.Ok(new { message = "Categories are fetched", categories = categories });
-        
+        return await _context.Categories.ToListAsync();
     }
     
 }

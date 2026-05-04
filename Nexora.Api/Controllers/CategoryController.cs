@@ -1,30 +1,34 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexora.Application.Category;
-using Nexora.Application.Interfaces.Repositories;
+using Nexora.Application.Interfaces;
 using Nexora.Domain.Constants;
-using Nexora.Infrastructure.Repository;
 
 namespace Nexora.Api.Controllers;
 [ApiController]
 [Route("api/category")]
 public class CategoryController : Controller
 {
-    private readonly ICategoryRepository _categoryRepository;
-    public CategoryController(ICategoryRepository categoryRepository)
+    private readonly ICategoryService _categoryService;
+    public CategoryController(ICategoryService categoryService)
     {
-        _categoryRepository = categoryRepository;
+        _categoryService = categoryService;
     }
     
     [Authorize(Roles = RoleNames.Admin)]
     [HttpPost]
     public async Task<IResult> AddCategory([FromForm] CategoryCommand data)
     {
-        return await _categoryRepository.AddCategory(data);
+        return await _categoryService.AddCategory(data);
     }
     [HttpGet]
     public async Task<IResult> GetCategory ([FromQuery] string? name )
     {
-        return await _categoryRepository.GetCategory(name);
+        return await _categoryService.FindByName(name);
+    }
+    [HttpGet]
+    public async Task<IResult> GetCategories ()
+    {
+        return await _categoryService.GetAll();
     }
 }

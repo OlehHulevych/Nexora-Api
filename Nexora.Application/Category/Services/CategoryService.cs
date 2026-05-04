@@ -1,59 +1,56 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces;
-using Nexora.Application.Interfaces.Context;
-using Nexora.Domain;
+
+using Nexora.Application.Interfaces.Repositories;
 
 namespace Nexora.Application.Category.Services;
 
 public class CategoryService:ICategoryService
 {
-    public IApplicationDbContext _context;
+    public readonly ICategoryRepository CategoryRepository;
 
-    public CategoryService(IApplicationDbContext context)
+    public CategoryService(ICategoryRepository categoryRepository)
     {
-        _context = context;
+        CategoryRepository = categoryRepository;
     }
 
-    public async Task<Domain.Entities.Category> AddCategory(CategoryCommand data)
+    public async Task<IResult> AddCategory(CategoryCommand data)
     {
         if (data.Equals(null))
         {
             throw new BadHttpRequestException("There must be name of category");
         }
-
         Domain.Entities.Category newCategory = new Domain.Entities.Category(data.name);
-        await _context.Categories.AddAsync(newCategory);
-        await _context.SaveChangesAsync();
-        return newCategory;
+        await CategoryRepository.AddCategory(newCategory);
+        return Results.Ok(new {message = "The category was added", Category = newCategory});
     }
 
-    public async Task<Domain.Entities.Category> FindByName(string name)
+    public async Task<IResult> FindByName(string? name)
     {
-        if (name.IsNullOrEmpty())
+        if (name.IsNullOrEmpty()|| name == null)
         {
             throw new BadHttpRequestException("There must be name of category");
 
         }
 
-        Domain.Entities.Category? category = await _context.Categories.FirstOrDefaultAsync(c=>c.Name==name);
+        Domain.Entities.Category? category = await CategoryRepository.GetCategory(name);
         if (category == null)
         {
             throw new BadHttpRequestException("There is no category with name");
         }
 
-        return category;
+        return Results.Ok(new {message = "The category was retrieved", category});
     }
 
-    public async Task<List<Domain.Entities.Category>> GetAll()
+    public async Task<IResult> GetAll()
     {
-        var categories = await _context.Categories.ToListAsync();
+        var categories = await CategoryRepository.GetCategories();
         if (categories.IsNullOrEmpty())
         {
             throw new BadHttpRequestException("Failed to get categories");
         }
 
-        return categories;
+        return Results.Ok(new {message = "The categories are retrieved", categories});
     }
 }
