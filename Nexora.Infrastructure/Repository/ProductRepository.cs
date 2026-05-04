@@ -52,7 +52,7 @@ public class ProductRepository:IProductRepository
         return new GetProductResponse(listings, request.page, length / 10);
     }
 
-    public async Task<Listing?> GetProductById(Guid id)
+    public async Task<Listing?> GetProductById(Guid? id)
     {
         return await _context.Listings.FirstOrDefaultAsync(l => l.Id.Equals(id));
     }

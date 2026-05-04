@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Cart.Requests;
 using Nexora.Application.Interfaces.Context;
+using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Domain.Constants;
 using Nexora.Domain.Exceptions;
@@ -10,27 +11,22 @@ namespace Nexora.Application.Users.Services;
 
 public class CartService:ICartService
 {
-    private readonly IApplicationDbContext _context;
-
-    public CartService(IApplicationDbContext context)
+    private readonly ICartRepository _cartRepository;
+    private readonly IProductRepository _productRepository;
+    public CartService(ICartRepository cartRepository, IProductRepository productRepository)
     {
-        _context = context;
+        _cartRepository = cartRepository;
+        _productRepository = productRepository;
     }
 
-    public async Task<CartItem?> AddListing(Guid? listingId, string? userId)
+    public async Task<IResult> AddListing(Guid? listingId, string? userId)
     {
         if (listingId == null || userId == null) throw new ArgumentException();
         if (userId == null) throw new ArgumentException();
-
-        var userCart = await _context.Carts.FirstOrDefaultAsync(c=>c.UserId==userId);
+        Domain.Entities.Cart? userCart = await _cartRepository.GetCartByUser(userId);
         if (userCart == null) throw new NotFoundException(nameof(Domain.Entities.Cart), userId);
-
-        var listing = await _context.Listings.FirstOrDefaultAsync(l=>l.Id == listingId);
-        if (listing == null)
-        {
-            throw new NotFoundException(nameof(Listing), listingId);
-        }
-
+        var listing = await _productRepository.GetProductById(listingId);
+        if (listing == null) throw new NotFoundException(nameof(Listing), listingId);
         CartItem item = new CartItem()
         {
             CartId = userCart.Id,
@@ -41,20 +37,16 @@ public class CartService:ICartService
             Price = listing.Price
         };
 
-        await _context.CartItems.AddAsync(item);
-        await _context.SaveChangesAsync();
-        return item;
 
+        return Results.Ok(new {message = "The listing was created", data = item});
     }
 
-    public async Task<Guid?> RemoveListing(Guid? id)
+    public async Task<IResult> RemoveListing(Guid? id)
     {
         if (id == Guid.Empty || id.Equals(null)) throw new BadHttpRequestException("There is no id for removing");
-        CartItem? cartItem = await _context.CartItems.FirstOrDefaultAsync(ct => ct.Id.Equals(id));
-        if (cartItem is null) throw new BadHttpRequestException("listing in cart is not found");
-        _context.CartItems.Remove(cartItem);
-        await _context.SaveChangesAsync();
-        return cartItem.Id;
+        await _cartRepository.RemoveItemFromCart(id);
+
+        return Results.Ok(new {message = "The listing was removed from cart"});
 
     }
 

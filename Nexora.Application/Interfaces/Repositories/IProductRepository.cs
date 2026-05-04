@@ -9,7 +9,7 @@ public interface IProductRepository
 {
     public Task<Guid?> CreateProduct(Listing listing);
     public Task<GetProductResponse?> GetAllProduct(GetProductsCommand request);
-    public Task<Listing?> GetProductById(Guid id);
+    public Task<Listing?> GetProductById(Guid? id);
     public Task? UpdateProduct(Listing listing);
     public Task<IResult?> DeleteProduct(Guid listingId, string userId);
 }

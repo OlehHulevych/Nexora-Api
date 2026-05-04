@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Cart.Requests;
+using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Services;
+using Nexora.Domain.Constants;
 using Nexora.Domain.Entities;
 using Nexora.Domain.Exceptions;
 
@@ -9,34 +13,61 @@ namespace Nexora.Infrastructure.Repository;
 
 public class CartRepository:ICartRepository
 {
-    private readonly CartService _cartService;
+    private readonly IApplicationDbContext _context;
 
-    public CartRepository(CartService cartService)
+    public CartRepository(IApplicationDbContext context)
     {
-        _cartService = cartService;
+        _context = context;
     }
-    public async Task<IResult> AddItemToCart(Guid? listingId, string? userId)
+    public async Task<Guid?> AddItemToCart(CartItem? cartItem)
     {
-        if (listingId == null || userId == null) return Results.BadRequest("There is no data for adding item to cart");
-        CartItem? cartItem = await _cartService.AddListing(listingId,userId);
-        if (cartItem is null) return Results.BadRequest("Failed to add listing to the cart");
-        return Results.Ok(new {message="The listing was added successfully"});
-    }
-
-    public async Task<IResult> RemoveItemFromCart(Guid? id)
-    {
-        if (id.Equals(null) || id == Guid.Empty) return Results.BadRequest("No id");
-        var deletedId = await _cartService.RemoveListing(id);
-        if (deletedId.Equals(null) || id == Guid.Empty) return Results.BadRequest("Failed to delete listing from you cart");
-        return Results.Ok(new {message= $"The listing with {deletedId} was deleted", id = deletedId});
-
+        if (cartItem == null) throw new BadHttpRequestException("There is no data for adding item to cart");
+        await _context.CartItems.AddAsync(cartItem);
+        return cartItem.Id;
     }
 
-    public async Task<IResult> ChangingQuantity(ChangingQuantityRequest request)
-    {
-        Guid? id = await _cartService.ChangeListingQuantity(request);
-        if (id == null) return Results.BadRequest("Failed to change Quantity");
-        return Results.Ok(new { message = "Quantity was changed", cartItemId = id });
+    
 
+    public async Task RemoveItemFromCart(Guid? id)
+    {
+        if (id.Equals(null) || id == Guid.Empty) throw new BadHttpRequestException("Id is required");
+        CartItem? cartItem = await _context.CartItems.FirstOrDefaultAsync(ct=>ct.Id == id);
+        if (cartItem == null) throw new NotFoundException(nameof(CartItem), id);
+        _context.CartItems.Remove(cartItem);
+        await _context.SaveChangesAsync();
+
+
+    }
+
+    public async Task ChangingQuantity(ChangingQuantityRequest? request)
+    {
+        if (request == null) throw new BadHttpRequestException("The required data is missing ");
+        CartItem? cartItem = await _context.CartItems.Include(ct=>ct.Listing).FirstOrDefaultAsync(ct => ct.Id == request.cartItemId);
+        if (cartItem == null) throw new NotFoundException(nameof(CartItem), request.cartItemId);
+        if (request.action == ActsNames.Increase)
+        {
+            if (cartItem.Quantity < cartItem.Listing.StockQuantity) cartItem.Quantity++;
+        }
+        else
+        {
+            if (cartItem.Quantity > 0) cartItem.Quantity--;
+        }
+
+        await _context.SaveChangesAsync();
+        
+
+    }
+
+    public async Task<Cart> GetCartByUser(string userId)
+    {
+        Cart? cart = await _context.Carts.FirstOrDefaultAsync(c=>c.UserId==userId);
+        if (cart == null) throw new NotFoundException(nameof(Cart), userId);
+        return cart;
+    }
+
+    public async Task<CartItem?> GetCartItemById(Guid? id)
+    {
+        if (id == null) throw new BadHttpRequestException("Id is required");
+        return await _context.CartItems.FirstOrDefaultAsync(ct=>ct.Id==id);
     }
 }
