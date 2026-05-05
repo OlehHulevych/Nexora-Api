@@ -4,24 +4,22 @@ using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Review.Request;
 using Nexora.Application.Review.Services;
 using Nexora.Domain.DTOs;
+using Nexora.Domain.Entities;
 
 namespace Nexora.Infrastructure.Repository;
 
 public class ReviewRepository:IReviewRepository
 {
-    private readonly IReviewService _reviewService;
+    
 
     public ReviewRepository(IReviewService reviewService)
     {
-        _reviewService = reviewService;
     }
    
     
-    public async Task<IResult> AddReviewToListing(ReviewRequest request)
+    public async Task<IResult> AddReviewToListing(Review review)
     {
-        ReviewDto? response = await _reviewService.AddReview(request);
-        if (response == null) throw new BadHttpRequestException("Failed to add your review");
-        return Results.Ok(new {message = "Review was created", data = response});
+        
         
     }
 

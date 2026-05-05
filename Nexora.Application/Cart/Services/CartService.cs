@@ -50,35 +50,17 @@ public class CartService:ICartService
 
     }
 
-    public async Task<Guid?> ChangeListingQuantity(ChangingQuantityRequest request)
+    public async Task<IResult> ChangeListingQuantity(ChangingQuantityRequest request)
     {
         if (request is null)
         {
             throw new ArgumentNullException(nameof(request), "Request cannot be null.");
         }
 
-        CartItem? cartItem = await _context.CartItems.Include(ct=>ct.Listing).FirstOrDefaultAsync(c=>c.Id == request.cartItemId);
-        if (cartItem is null) throw new NotFoundException(nameof(CartItem), request.cartItemId);
-        if (request.action == ActsNames.Increase)
-        {
-            if (cartItem.Quantity != cartItem.Listing.StockQuantity)
-            {
-                cartItem.Quantity += 1;
-            }
-            
-        }
+        await _cartRepository.ChangingQuantity(request);
+        return Results.Ok(new {message = "The quantity of items was changed"});
 
-        if (request.action == ActsNames.Reduce)
-        {
-            if (cartItem.Quantity > 1)
-            {
-                cartItem.Quantity -= 1;
-            }
-        }
 
-        await _context.SaveChangesAsync();
-
-        return cartItem.Id;
 
 
     }
