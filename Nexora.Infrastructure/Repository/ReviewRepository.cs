@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.Repositories;
@@ -20,8 +21,9 @@ public class ReviewRepository:IReviewRepository
         return saved > 0;
     }
 
-    public async Task<Review?> GetByIdAsync(Guid id)
+    public async Task<Review?> GetByIdAsync(Guid? id)
     {
+        if (id == null) throw new BadHttpRequestException("Id is required");
         Review? review = await _context.Reviews.FirstOrDefaultAsync(r=>r.Id.Equals(id));
         if (review == null) throw new NotFoundException(nameof(Review), id);
         return review;
@@ -42,8 +44,9 @@ public class ReviewRepository:IReviewRepository
         return result > 0;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid? id)
     {
+        if (id == null) throw new BadHttpRequestException("The id is required");
         Review? review = await _context.Reviews.FirstOrDefaultAsync(r => r.Id == id);
         if (review==null) throw new NotFoundException(nameof(Review), id);
         _context.Reviews.Remove(review);

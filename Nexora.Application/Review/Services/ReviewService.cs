@@ -1,7 +1,7 @@
 ﻿using System.Security.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Nexora.Application.Interfaces.Context;
+using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Review.Request;
 using Nexora.Domain.DTOs;
@@ -11,20 +11,23 @@ namespace Nexora.Application.Review.Services;
 
 public class ReviewService:IReviewService
 {
-    private readonly IApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IProductRepository _productRepository;
+    private readonly IReviewRepository _reviewRepository;
 
-    public ReviewService(IApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public ReviewService( UserManager<ApplicationUser> userManager, IProductRepository productRepository, IReviewRepository reviewRepository)
     {
-        _context = context;
         _userManager = userManager;
+        _productRepository = productRepository;
+        _reviewRepository = reviewRepository;
     }
 
-    public async Task<ReviewDto?> AddReview(ReviewRequest? request)
+    public async Task<IResult> AddReview(ReviewRequest? request)
     {
+        if (request == null) throw new BadHttpRequestException("The required data are missing");
         var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null) throw new AuthenticationException("Failed to find user");
-        var listing = await _context.Listings.FirstOrDefaultAsync(l=>l.Id.Equals(request.ListingId));
+        var listing = await _productRepository.GetProductById(request.ListingId);
         if (listing == null) throw new NotFoundException(nameof(Listing), request.ListingId);
         Domain.Entities.Review newReview = new Domain.Entities.Review()
         {
@@ -35,48 +38,49 @@ public class ReviewService:IReviewService
             Comment = request.Comment,
             Rating = request.Rating
         };
-        await _context.Reviews.AddAsync(newReview);
-        await _context.SaveChangesAsync();
-        return new ReviewDto(user.FirstName + " "+user.LastName, request.Rating, request.Comment );
+        var response = await _reviewRepository.CreateAsync(newReview);
+        if (response) return Results.Ok(new {message = "The review was created", review = new ReviewDto(user.FirstName + " "+user.LastName, request.Rating, request.Comment )});
+        return Results.BadRequest("Failed to create review");
 
     }
+    
 
-    public async Task<Guid?> LikeReview(Guid? reviewId)
-    {
-        if (reviewId == null) throw new ArgumentNullException(nameof(reviewId), "ReviewId is required");
-        Domain.Entities.Review? review = await _context.Reviews.FirstOrDefaultAsync(r=>r.Id.Equals(reviewId));
-        if (review == null) throw new NullReferenceException(nameof(Domain.Entities.Review));
-        review.Likes += 1;
-        await _context.SaveChangesAsync();
-        return review.Id;
-    }
-
-    public async Task<ReviewDto?> AnswerOnReview(AnswerOnReviewRequest? request)
+    public async Task<IResult> AnswerOnReview(AnswerOnReviewRequest? request)
     {
         if (request == null || request.ReviewId == null || request.UserId==null || request.ListingId == null) throw new ArgumentNullException(nameof(request), "ReviewId is required");
         var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null) throw new AuthenticationException("Failed to find user");
-        var review = await _context.Reviews.FirstOrDefaultAsync(r=>r.Id.Equals(request.ReviewId));
-        if(review == null) throw new NotFoundException(nameof(review), request.ReviewId);
-        var listing = await _context.Listings.FirstOrDefaultAsync(l=>l.Id.Equals(request.ListingId));
-        if (listing == null) throw new NotFoundException(nameof(Listing), request.ListingId);
-        Domain.Entities.Review answeringReview = new Domain.Entities.Review
+        Domain.Entities.Review? review = await _reviewRepository.GetByIdAsync(request.ReviewId);
+        var listing = await _productRepository.GetProductById(request.ListingId);
+        if (listing != null)
         {
-            Author = user,
-            MainReviewId = review.Id,
-            MainReview = review,
-            AuthorId = user.Id,
-            Product = listing,
-            ProductId = listing.Id,
-            Comment = request.Comment,
-           
-        };
+            Domain.Entities.Review answeringReview = new Domain.Entities.Review
+            {
+                Author = user,
+                MainReviewId = review?.Id,
+                MainReview = review,
+                AuthorId = user.Id,
+                Product = listing,
+                ProductId = listing.Id,
+                Comment = request.Comment,
+            };
+            await _reviewRepository.CreateAsync(answeringReview);
+            review?.Reviews.Add(answeringReview);
+        }
 
-        await _context.Reviews.AddAsync(review);
-        review.Reviews.Add(answeringReview);
-        await _context.SaveChangesAsync();
-        return new ReviewDto(user.FirstName + " "+user.LastName, null, request.Comment );
+        var result = review != null && await  _reviewRepository.UpdateAsync(review);
+        if (!result) throw new BadHttpRequestException("Failed to create answer on review");
+        return Results.Ok(new {message = "The answer was created"});
 
+
+    }
+
+    public async Task<IResult> RemoveReview(Guid? id)
+    {
+        if (id == null) throw new BadHttpRequestException("Id is required");
+        var result = await  _reviewRepository.DeleteAsync(id);
+        if (!result) return Results.BadRequest("Failed to delete review");
+        return Results.Ok(new {message = "The review was deleted"});
 
     }
 }
