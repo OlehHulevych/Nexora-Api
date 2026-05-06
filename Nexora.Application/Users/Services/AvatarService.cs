@@ -1,19 +1,19 @@
-﻿
-using Microsoft.IdentityModel.Tokens;
-using Nexora.Application.Interfaces.Context;
+﻿using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces.IBlobStorage;
+using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
+using Nexora.Application.Users.Commands.UploadAvatar;
 
-namespace Nexora.Application.Users.Commands.UploadAvatar;
+namespace Nexora.Application.Users.Services;
 
 public class AvatarService:IAvatarService
 {
     private readonly IUserBlobStorage _userUserBlobStorage;
-    private readonly IApplicationDbContext _context;
-    public AvatarService(IUserBlobStorage userUserBlobStorage, IApplicationDbContext context)
+    private readonly IAvatarRepository _avatarRepository;
+    public AvatarService(IUserBlobStorage userUserBlobStorage, IAvatarRepository avatarRepository)
     {
         _userUserBlobStorage = userUserBlobStorage;
-        _context = context;
+        _avatarRepository = avatarRepository;
     }
     public async Task<UploadAvatarResponse> UploadAvatar(UploadAvatarCommand avatarCommand, string username)
     {
@@ -30,8 +30,7 @@ public class AvatarService:IAvatarService
             FilePath = filePath
             
         };
-        await _context.Avatars.AddAsync(avatar);
-        await _context.SaveChangesAsync();
+        await _avatarRepository.Add(avatar);
         return new UploadAvatarResponse(avatar, avatarUri);
     }
     public async Task<UploadAvatarResponse> UpdateAvatar(UploadAvatarCommand avatarCommand, ApplicationUser user , Avatar avatar)
@@ -43,8 +42,7 @@ public class AvatarService:IAvatarService
         }
         avatar.Uri = avatarUri;
         avatar.FilePath = filePath;
-        _context.Avatars.Update(avatar);
-        await _context.SaveChangesAsync();
+        await _avatarRepository.Update(avatar);
         return new UploadAvatarResponse(avatar, avatarUri);
     }
 }
