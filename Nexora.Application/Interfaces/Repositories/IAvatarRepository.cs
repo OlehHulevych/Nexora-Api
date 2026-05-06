@@ -5,4 +5,6 @@ public interface IAvatarRepository
     public Task<bool> Add(Avatar avatar);
     public Task<bool> Update(Avatar avatar);
     public Task<Avatar?> GetById(Guid id);
+    public Task<Avatar?> GetByUserId(string id);
+    public Task<bool> Delete(Guid id);
 }
