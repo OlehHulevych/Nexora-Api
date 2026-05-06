@@ -21,5 +21,6 @@ public interface IUserService
     public Task<IResult> UnBanUserHandler(String id);
     public Task<IResult> DeleteUserHandler(string id);
     public Task<IResult> GetUsersHandler(AllUserCommand request);
+    
 
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Domain.Entities;
+using Nexora.Domain.Exceptions;
 
 namespace Nexora.Infrastructure.Storage;
 
@@ -49,14 +50,15 @@ public class UserBlobStorageService:IUserBlobStorage
         return (blobClient.Uri.ToString(),blobPath);
     }
 
-    public async Task<(string,string)> UpdateAsync(IFormFile file, ApplicationUser user, Avatar avatarForUpdate, CancellationToken ct = default)
+    public async Task<(string,string)> UpdateAsync(IFormFile file, ApplicationUser user, Avatar? avatarForUpdate, CancellationToken ct = default)
     {
         var extension = Path.GetExtension(file.FileName);
+        if (avatarForUpdate == null) throw new BadHttpRequestException("Avatar is requiered");
         if (!AllowedExtensions.Contains(extension))
         {
             throw new InvalidOperationException($"File type '{extension}' is not allowed");
         }
-
+        
         var blobName = avatarForUpdate.FilePath;
         var blobClient = _containerClient.GetBlobClient(blobName);
         await blobClient.DeleteIfExistsAsync(cancellationToken:ct);

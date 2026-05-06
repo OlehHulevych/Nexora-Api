@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Nexora.Application.Interfaces;
+
 using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
@@ -12,18 +11,19 @@ namespace Nexora.Application.Product.Services;
 
 public class ListingService:IListingService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserRepository _userRepository;
     private readonly IProductBlobStorage _storage;
     private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
     
 
-    public ListingService(UserManager<ApplicationUser> userManager, ICategoryRepository categoryRepository,  IProductBlobStorage storage, IProductRepository productRepository)
+    public ListingService(IUserRepository userRepository, ICategoryRepository categoryRepository,  IProductBlobStorage storage, IProductRepository productRepository)
     {
-        _userManager = userManager;
+        
         _storage = storage;
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
+        _userRepository = userRepository;
     }
     
     public async Task<IResult> AddProduct(CreateProductCommand data, string id)
@@ -33,13 +33,13 @@ public class ListingService:IListingService
             throw new BadHttpRequestException("There is no data for creating ad");
         }
 
-        Domain.Entities.Category category = await _categoryRepository.GetCategory(data.Category);
+        Domain.Entities.Category? category = await _categoryRepository.GetCategory(data.Category);
         if (category == null)
         {
             throw new BadHttpRequestException("Failed to get category");
         }
         Console.WriteLine(category.Id);
-        ApplicationUser? user = await _userManager.FindByIdAsync(id);
+        ApplicationUser? user = await _userRepository.GetUser(id);
         Console.WriteLine(user?.Id);
         if (user == null)
         {
@@ -117,7 +117,7 @@ public class ListingService:IListingService
             throw new NotFoundException(nameof(Listing), request.listingId);
         }
 
-        product?.Update(request.Name, request.Description, request.Price, request.StockQuantity);
+        product.Update(request.Name, request.Description, request.Price, request.StockQuantity);
         if (request.PhotosForDelete!=null && request.PhotosForDelete.Count>0)
         {
             var result = await _storage.DeleteForEditing(request.PhotosForDelete);
@@ -126,11 +126,11 @@ public class ListingService:IListingService
 
         if (request.Photos != null && request.Photos.Count>0)
         {
-            var result = await _storage.UploadAsync(request.Photos, $"listings/{product?.Name}", product.Id, product);
+            var result = await _storage.UploadAsync(request.Photos, $"listings/{product.Name}", product.Id, product);
             if (result.Count < 0) throw new BlobStorageException("Failed to upload new images for listing");
         }
 
-        return Results.Ok(new { message = "The listing was updated", data = product?.Id });
+        return Results.Ok(new { message = "The listing was updated", data = product.Id });
     }
 
     public async Task<IResult?> RemoveListing(Guid listingId, string userId)

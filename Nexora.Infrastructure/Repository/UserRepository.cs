@@ -99,4 +99,12 @@ public class UserRepository:IUserRepository
         var result = await _userManager.CheckPasswordAsync(user, password);
         return result;
     }
+
+    public async Task<bool> DeleteUser(string id)
+    {
+        ApplicationUser? user = await FindById(id);
+        if (user == null) throw new NotFoundException(nameof(ApplicationUser), id);
+        var result = await _userManager.DeleteAsync(user);
+        return result.Succeeded;
+    }
 }

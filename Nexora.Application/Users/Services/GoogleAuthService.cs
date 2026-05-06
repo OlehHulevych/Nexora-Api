@@ -1,5 +1,4 @@
 ﻿using System.Security.Authentication;
-using Microsoft.AspNetCore.Identity;
 
 using Nexora.Application.Interfaces.Services;
 using Nexora.Domain.DTOs;
@@ -8,7 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Nexora.Application.Interfaces.Config;
 using Nexora.Application.Interfaces.JwtService;
-using Nexora.Domain.Constants;
+using Nexora.Application.Interfaces.Repositories;
+using Nexora.Domain.Enums;
 using Nexora.Domain.Exceptions;
 
 namespace Nexora.Application.Users.Services;
@@ -16,18 +16,18 @@ namespace Nexora.Application.Users.Services;
 public class GoogleAuthService:IGoogleAuthService
 {
     private readonly IHttpContextAccessor _context;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IGoogleConfig _googleConfig;
     private readonly IJwtService _jwtService;
     private readonly ILogger<GoogleAuthService> _logger;
+    private readonly IUserRepository _userRepository;
 
-    public GoogleAuthService( UserManager<ApplicationUser> userManager, IGoogleConfig googleConfig, ILogger<GoogleAuthService> logger, IJwtService jwtService, IHttpContextAccessor context)
+    public GoogleAuthService( IUserRepository userRepository, IGoogleConfig googleConfig, ILogger<GoogleAuthService> logger, IJwtService jwtService, IHttpContextAccessor context)
     {
-        _userManager = userManager;
         _googleConfig = googleConfig;
         _logger = logger;
         _jwtService = jwtService;
         _context = context;
+        _userRepository = userRepository;
     }
     public async Task<IResult> GoogleSignIn(GoogleSignInVM? model)
     {
@@ -47,21 +47,12 @@ public class GoogleAuthService:IGoogleAuthService
             EmailConfirmed = true
         };
 
-        var createResult = await _userManager.CreateAsync(user);
-        if (!createResult.Succeeded)
+        var createResult = await _userRepository.AddUser(user, null,LoginProvider.Google,payload);
+        if (!createResult)
         {
-            foreach (var error in createResult.Errors )
-            {
-                _logger.LogInformation(error.Code);
-                _logger.LogInformation(error.Description);
-            }
+            _logger.LogError("Something went wrong during creating account");
             throw new BadHttpRequestException("Something went wrong during authentication");
         }
-
-        await _userManager.AddLoginAsync(user, new UserLoginInfo(
-            LoginNames.Google,
-            payload.Subject,
-            LoginNames.Google));
         return Results.Ok(new
         {
             message = "The user logged in",
@@ -76,7 +67,7 @@ public class GoogleAuthService:IGoogleAuthService
         {
             Audience = new [] {_googleConfig.ClientId}
         });
-        var user = await _userManager.FindByEmailAsync(payload.Email);
+        var user = await _userRepository.FindByEmail(payload.Email);
         if (user == null) throw new NotFoundException(nameof(ApplicationUser), payload.Email);
         var token = await _jwtService.CreateToken(user);
         if (token == null) throw new AuthenticationException("Failed to create token");

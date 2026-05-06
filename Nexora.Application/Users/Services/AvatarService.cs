@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
 using Microsoft.IdentityModel.Tokens;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Application.Interfaces.Services;
-using Nexora.Domain.Entities;
 
 namespace Nexora.Application.Users.Commands.UploadAvatar;
 
