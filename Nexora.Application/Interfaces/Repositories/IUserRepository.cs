@@ -1,19 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Google.Apis.Auth;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nexora.Application.Common;
 using Nexora.Application.Users.Commands.GettingUsers;
 using Nexora.Application.Users.Commands.Login;
 using Nexora.Application.Users.Commands.Register;
 using Nexora.Application.Users.Commands.Update;
 using Nexora.Domain.DTOs;
+using Nexora.Domain.Enums;
 
 namespace Nexora.Application.Interfaces.Repositories;
 
 public interface IUserRepository
 {
-    public Task<IResult> AddUser(RegisterUserCommand request);
-    public Task<IResult> UpdateUser(UpdateUserCommand updateUserCommand);
-    public Task<IResult> GetUser(string id);
-    public Task<IResult> GetAllUsers(AllUserCommand request);
+    public Task<bool> AddUser(ApplicationUser user, string? password, LoginProvider? loginProvider, GoogleJsonWebSignature.Payload? payload);
+    public Task<bool> UpdateUser(ApplicationUser user);
+    public Task<ApplicationUser?> GetUser(string id);
+    public Task<PagedResult<ApplicationUser>> GetAllUsers(AllUserCommand request);
 
 
 }

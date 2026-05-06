@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Nexora.Application.Cart.Services;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Product.Services;
 using Nexora.Application.Review.Services;

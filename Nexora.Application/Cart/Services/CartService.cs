@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Cart.Requests;
-using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
-using Nexora.Domain.Constants;
 using Nexora.Domain.Exceptions;
 
-namespace Nexora.Application.Users.Services;
+namespace Nexora.Application.Cart.Services;
 
 public class CartService:ICartService
 {
@@ -36,9 +33,9 @@ public class CartService:ICartService
             Quantity = 1,
             Price = listing.Price
         };
+        await _cartRepository.AddItemToCart(item);
 
-
-        return Results.Ok(new {message = "The listing was created", data = item});
+        return Results.Ok(new {message = "The listing was added to cart", data = item});
     }
 
     public async Task<IResult> RemoveListing(Guid? id)
