@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IApplicationDbContext>(provider => 
             provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();

@@ -19,16 +19,12 @@ namespace Nexora.Application.Users.Services;
 
 public class AuthService:IAuthService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IApplicationDbContext _context;
     private readonly IAvatarService _avatarService;
     private readonly IJwtService _jwtService;
     private ILogger<AuthService> _logger;
 
-    public AuthService(UserManager<ApplicationUser> userManager, IApplicationDbContext context, IAvatarService avatarService, ILogger<AuthService> logger, IJwtService jwtService)
+    public AuthService( IAvatarService avatarService, ILogger<AuthService> logger, IJwtService jwtService)
     {
-        _context = context;
-        _userManager = userManager;
         _avatarService = avatarService;
         _logger = logger;
         _jwtService = jwtService;
