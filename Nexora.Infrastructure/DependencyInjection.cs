@@ -21,9 +21,10 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("ConnectionStrings:DefaultConnection")));
         services.AddScoped<IApplicationDbContext>(provider => 
             provider.GetRequiredService<ApplicationDbContext>());
-        services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<ICartItemRepository, CartItemRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IAddressRepository, AddressRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IUserBlobStorage, UserBlobStorageService>();

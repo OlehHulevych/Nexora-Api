@@ -72,4 +72,31 @@ public class UserRepository:IUserRepository
         return new PagedResult<ApplicationUser>(items,total);
 
     }
+
+    public async Task<bool> AddRole(ApplicationUser user, string role)
+    {
+        var result = await _userManager.AddToRoleAsync(user, role);
+        return result.Succeeded;
+    }
+
+    public async Task<ApplicationUser?> FindByEmail(string email)
+    {
+        ApplicationUser? user = await _userManager.FindByEmailAsync(email);
+        if (user == null) throw new NotFoundException(nameof(ApplicationUser), email);
+        return user;
+    }
+    public async Task<ApplicationUser?> FindById(string email)
+    {
+        ApplicationUser? user = await _userManager.Users
+            .Include(u=>u.Address)
+            .Include(u=>u.Avatar).FirstOrDefaultAsync(u=>u.Email==email);
+        if (user == null) throw new NotFoundException(nameof(ApplicationUser), email);
+        return user;
+    }
+
+    public async Task<bool> CheckPassword(ApplicationUser user, string password)
+    {
+        var result = await _userManager.CheckPasswordAsync(user, password);
+        return result;
+    }
 }

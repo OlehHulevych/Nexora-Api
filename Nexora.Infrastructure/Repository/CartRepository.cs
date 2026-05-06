@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Nexora.Application.Cart.Requests;
+﻿using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.Repositories;
-using Nexora.Application.Users.Services;
-using Nexora.Domain.Constants;
 using Nexora.Domain.Entities;
 using Nexora.Domain.Exceptions;
 
@@ -19,55 +14,24 @@ public class CartRepository:ICartRepository
     {
         _context = context;
     }
-    public async Task<Guid?> AddItemToCart(CartItem? cartItem)
+    public async Task<bool> CreateCart(Cart cart)
     {
-        if (cartItem == null) throw new BadHttpRequestException("There is no data for adding item to cart");
-        await _context.CartItems.AddAsync(cartItem);
-        return cartItem.Id;
+        await _context.Carts.AddAsync(cart);
+        var result = await _context.SaveChangesAsync();
+        return result > 0;
     }
 
-    
-
-    public async Task RemoveItemFromCart(Guid? id)
+    public async  Task<Cart?> GetCartById(Guid id)
     {
-        if (id.Equals(null) || id == Guid.Empty) throw new BadHttpRequestException("Id is required");
-        CartItem? cartItem = await _context.CartItems.FirstOrDefaultAsync(ct=>ct.Id == id);
-        if (cartItem == null) throw new NotFoundException(nameof(CartItem), id);
-        _context.CartItems.Remove(cartItem);
-        await _context.SaveChangesAsync();
-
-
-    }
-
-    public async Task ChangingQuantity(ChangingQuantityRequest? request)
-    {
-        if (request == null) throw new BadHttpRequestException("The required data is missing ");
-        CartItem? cartItem = await _context.CartItems.Include(ct=>ct.Listing).FirstOrDefaultAsync(ct => ct.Id == request.cartItemId);
-        if (cartItem == null) throw new NotFoundException(nameof(CartItem), request.cartItemId);
-        if (request.action == ActsNames.Increase)
-        {
-            if (cartItem.Quantity < cartItem.Listing.StockQuantity) cartItem.Quantity++;
-        }
-        else
-        {
-            if (cartItem.Quantity > 0) cartItem.Quantity--;
-        }
-
-        await _context.SaveChangesAsync();
-        
-
-    }
-
-    public async Task<Cart> GetCartByUser(string userId)
-    {
-        Cart? cart = await _context.Carts.FirstOrDefaultAsync(c=>c.UserId==userId);
-        if (cart == null) throw new NotFoundException(nameof(Cart), userId);
+        Cart? cart = await _context.Carts.FirstOrDefaultAsync(c=>c.Id == id);
+        if (cart == null) throw new NotFoundException(nameof(Cart), id);
         return cart;
     }
 
-    public async Task<CartItem?> GetCartItemById(Guid? id)
+    public async Task<Cart?> GetCartByUserId(string id)
     {
-        if (id == null) throw new BadHttpRequestException("Id is required");
-        return await _context.CartItems.FirstOrDefaultAsync(ct=>ct.Id==id);
+        Cart? cart = await _context.Carts.FirstOrDefaultAsync(c=>c.UserId == id);
+        if (cart == null) throw new NotFoundException(nameof(Cart), id);
+        return cart;
     }
 }

@@ -8,9 +8,9 @@ namespace Nexora.Application.Cart.Services;
 
 public class CartService:ICartService
 {
-    private readonly ICartRepository _cartRepository;
+    private readonly ICartItemRepository _cartRepository;
     private readonly IProductRepository _productRepository;
-    public CartService(ICartRepository cartRepository, IProductRepository productRepository)
+    public CartService(ICartItemRepository cartRepository, IProductRepository productRepository)
     {
         _cartRepository = cartRepository;
         _productRepository = productRepository;

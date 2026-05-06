@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.JwtService;
+using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Users.Commands.Login;
 using Nexora.Application.Users.Commands.Register;
@@ -21,13 +18,18 @@ public class AuthService:IAuthService
 {
     private readonly IAvatarService _avatarService;
     private readonly IJwtService _jwtService;
+    private readonly IUserRepository _userRepository;
+    
     private ILogger<AuthService> _logger;
 
-    public AuthService( IAvatarService avatarService, ILogger<AuthService> logger, IJwtService jwtService)
+    public AuthService( IAvatarService avatarService, ILogger<AuthService> logger, 
+        IJwtService jwtService,IUserRepository userRepository)
     {
         _avatarService = avatarService;
         _logger = logger;
         _jwtService = jwtService;
+      
+        _userRepository = userRepository;
     }
     
     public async Task<IResult> RegisterUserService(RegisterUserCommand request)
@@ -52,35 +54,23 @@ public class AuthService:IAuthService
 
             };
             
-            var result = await _userManager.CreateAsync(user, request.Password);
+            var result = await _userRepository.AddUser(user, request.Password,null,null);
+            if (!result) throw new BadHttpRequestException("Failed to create new user");
             Domain.Entities.Cart newCart = new Domain.Entities.Cart()
             {
                 UserId = user.Id
             };
             Domain.Entities.Address address = new Domain.Entities.Address(user.Id, request.Address.Line1,
                 request.Address.City, request.Address.Country, request.Address.PostalCode, request.Address.Line2);
-            await _context.Carts.AddAsync(newCart);
-            await _context.Addresses.AddAsync(address);
             user.Cart = newCart;
-            var resultRoles = await _userManager.AddToRoleAsync(user, RoleNames.User);
-            if (!resultRoles.Succeeded)
-            {
-                throw new Exception("Failed to load role to user");
-            }
+            var resultRoles = await _userRepository.AddRole(user, RoleNames.User);
+            if (!resultRoles) throw new Exception("Failed to load role to user");
             UploadAvatarResponse avatarResponse =
                 await _avatarService.UploadAvatar(new UploadAvatarCommand(user.Id, user, request.Avatar), request.FirstName+"_"+request.LastName);
-            if (avatarResponse.uri.IsNullOrEmpty())
-            {
-                throw new Exception("Register failed during the uploading avatar");
-            }
+            if (avatarResponse.uri.IsNullOrEmpty()) throw new Exception("Register failed during the uploading avatar");
             user.Avatar = avatarResponse.Avatar;
             user.Address = address;
-            await _context.SaveChangesAsync();
-            if (!result.Succeeded)
-            {
-                var errors = string.Join("; ", result.Errors.Select(e => $"{e.Code}: {e.Description}"));
-                throw new AuthenticationFailureException(errors); 
-            }
+            await _userRepository.UpdateUser(user);
             RegisterUserResponse registerUserResult = new RegisterUserResponse(user.Id, user.Email, user.FirstName, user.LastName, address.Line1);
             _logger.LogInformation("The user is registered");
             return Results.Ok(new {message = "The user was registered", data = registerUserResult});
@@ -96,13 +86,13 @@ public class AuthService:IAuthService
 
         if (request != null)
         {
-            var user = await _userManager.FindByEmailAsync(request.email);
+            var user = await _userRepository.FindByEmail(request.email);
             if (user == null)
             {
                 throw new UserIsNotFoundException();
             }
 
-            var result = await _userManager.CheckPasswordAsync(user, request.password);
+            var result = await _userRepository.CheckPassword(user, request.password);
             if (!result)
             {
                 throw new PasswordIsNotMatched();
@@ -127,7 +117,7 @@ public class AuthService:IAuthService
             throw new BadHttpRequestException("There is no user`id");
         }
 
-        var user = await _userManager.Users.Include(u=>u.Avatar).Include(u=>u.Address).FirstOrDefaultAsync(u=>u.Id.Equals(id));
+        var user = await _userRepository.FindByEmail(id);
         if (user == null)
         {
             throw new UserIsNotFoundException();
@@ -145,7 +135,7 @@ public class AuthService:IAuthService
 
     private async Task<bool> CheckIfuserExistByEmail(string email)
     {
-        var result = await _userManager.FindByEmailAsync(email);
+        var result = await _userRepository.FindByEmail(email);
         return result == null && false;
     }
 
