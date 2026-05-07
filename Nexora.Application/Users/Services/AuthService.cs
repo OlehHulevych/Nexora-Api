@@ -78,7 +78,7 @@ public class AuthService:IAuthService
     
     public async Task<IResult> LoginUserHandler(LoginUserCommand? request)
     {
-        if (request != null && (request.email.IsNullOrEmpty() || request.password.IsNullOrEmpty()))
+        if (request != null && (request.email.IsNullOrEmpty() || request.password.IsNullOrEmpty())
         {
             throw new ValidationException("Required data is missing");
         }
