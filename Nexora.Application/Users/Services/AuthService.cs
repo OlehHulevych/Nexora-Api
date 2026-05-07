@@ -76,7 +76,7 @@ public class AuthService:IAuthService
 
     }
     
-    public async Task<IResult> LoginUserHandler(LoginUserCommand? request)
+    public async Task<IResult> LoginUserHandler(LoginUserCommand? requst)
     {
         if (request != null && (request.email.IsNullOrEmpty() || request.password.IsNullOrEmpty()))
         {
