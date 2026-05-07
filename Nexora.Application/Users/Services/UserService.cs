@@ -14,11 +14,11 @@ namespace Nexora.Application.Users.Services;
 public class UserService:IUserService
 {
     
-    private readonly AvatarService _avatarService;
+    private readonly IAvatarService _avatarService;
     private readonly IUserRepository _userRepository;
     
 
-    public UserService(IUserRepository userRepository, AvatarService avatarService)
+    public UserService(IUserRepository userRepository, IAvatarService avatarService)
     {
         _userRepository = userRepository;
         _avatarService = avatarService;

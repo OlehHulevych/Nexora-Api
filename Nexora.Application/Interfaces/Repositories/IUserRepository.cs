@@ -20,6 +20,7 @@ public interface IUserRepository
     public Task<PagedResult<ApplicationUser>> GetAllUsers(AllUserCommand request);
     public Task<bool> AddRole(ApplicationUser user, string role);
     public Task<ApplicationUser?> FindByEmail(string email);
+    public Task<bool> CheckUserIfExistByEmail(string email);
     public Task<bool> CheckPassword(ApplicationUser user, string password);
     public Task<bool> DeleteUser(string id);
 

@@ -100,6 +100,13 @@ public class UserRepository:IUserRepository
         return result;
     }
 
+    public async Task<bool> CheckUserIfExistByEmail(string email)
+    {
+        var result = await _userManager.FindByEmailAsync(email);
+        if (result == null) return false;
+        return true;
+    }
+
     public async Task<bool> DeleteUser(string id)
     {
         ApplicationUser? user = await FindById(id);

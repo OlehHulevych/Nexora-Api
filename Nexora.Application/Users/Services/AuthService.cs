@@ -34,7 +34,7 @@ public class AuthService:IAuthService
     
     public async Task<IResult> RegisterUserService(RegisterUserCommand request)
     {
-            bool userExist = await CheckIfuserExistByEmail(request.Email);
+            bool userExist = await CheckIfUserExistByEmail(request.Email);
             if (userExist)
             {
                 throw new UserAlreadyExistsException(request.Email);
@@ -62,7 +62,6 @@ public class AuthService:IAuthService
             };
             Domain.Entities.Address address = new Domain.Entities.Address(user.Id, request.Address.Line1,
                 request.Address.City, request.Address.Country, request.Address.PostalCode, request.Address.Line2);
-            user.Cart = newCart;
             var resultRoles = await _userRepository.AddRole(user, RoleNames.User);
             if (!resultRoles) throw new Exception("Failed to load role to user");
             UploadAvatarResponse avatarResponse =
@@ -133,10 +132,10 @@ public class AuthService:IAuthService
         return Results.BadRequest(new {message = "Failed to retrieve user"});
     }
 
-    private async Task<bool> CheckIfuserExistByEmail(string email)
+    private async Task<bool> CheckIfUserExistByEmail(string email)
     {
-        var result = await _userRepository.FindByEmail(email);
-        return result == null && false;
+        var result = await _userRepository.CheckUserIfExistByEmail(email);
+        return result;
     }
 
     private bool MatchingPasswordHandler(string password, string confirmPassword)
