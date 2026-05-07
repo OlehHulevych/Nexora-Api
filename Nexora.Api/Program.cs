@@ -18,7 +18,6 @@ using Nexora.Application.Users.Commands.Validation.Login;
 using Nexora.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 IConfiguration configuration = builder.Configuration;
@@ -49,9 +48,9 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
     };
-});
-builder.Services.AddAuthentication().AddGoogle(options =>
+}).AddGoogle(options =>
 {
+    
     options.ClientId = builder.Configuration["Google:ClientId"] ?? string.Empty;
     options.ClientSecret = builder.Configuration["Google:ClientSecret"] ?? string.Empty;
 });
@@ -113,18 +112,27 @@ if (app.Environment.IsDevelopment())
 }
 app.UseExceptionHandler(_=>{});
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");        
+app.UseAuthentication();        
+app.UseAuthorization(); 
 app.MapControllers();
 app.Run();
 async Task EnsureRolesAsync(WebApplication application)
 {
-    using var scope = application.Services.CreateScope();
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    string[] roles = { "USER", "ADMIN" };
-    foreach (var role in roles)
+    try
     {
-        if (!await roleManager.RoleExistsAsync(role))
+        using var scope = application.Services.CreateScope();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        string[] roles = { "USER", "ADMIN" };
+        foreach (var role in roles)
         {
-            await roleManager.CreateAsync(new IdentityRole(role));
+            if (!await roleManager.RoleExistsAsync(role))
+                await roleManager.CreateAsync(new IdentityRole(role));
         }
+    }
+    catch (Exception ex)
+    {
+        var logger = application.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Failed to seed roles");
     }
 }

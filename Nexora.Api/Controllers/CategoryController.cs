@@ -16,17 +16,20 @@ public class CategoryController : Controller
     }
     
     [Authorize(Roles = RoleNames.Admin)]
+    [Route("/add")]
     [HttpPost]
     public async Task<IResult> AddCategory([FromForm] CategoryCommand data)
     {
         return await _categoryService.AddCategory(data);
     }
     [HttpGet]
+    [Route("/get/one")]
     public async Task<IResult> GetCategory ([FromQuery] string? name )
     {
         return await _categoryService.FindByName(name);
     }
     [HttpGet]
+    [Route("/get/all")]
     public async Task<IResult> GetCategories ()
     {
         return await _categoryService.GetAll();

@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <DocumentationFile>bin\Debug\net8.0\Nexora.Api.xml</DocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>
       <UserSecretsId>7a1afac0-e1ab-4887-84df-79e88b857e1f</UserSecretsId>
   </PropertyGroup>

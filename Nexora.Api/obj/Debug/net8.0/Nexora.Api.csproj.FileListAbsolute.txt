@@ -138,7 +138,6 @@ E:\Projects\Nexora\Server\Nexora.Api\obj\Debug\net8.0\Nexora.Api.pdb
 E:\Projects\Nexora\Server\Nexora.Api\obj\Debug\net8.0\Nexora.Api.genruntimeconfig.cache
 E:\Projects\Nexora\Server\Nexora.Api\obj\Debug\net8.0\ref\Nexora.Api.dll
 E:\Projects\Nexora\Server\Nexora.Api\bin\Debug\net8.0\Nexora.Api.xml
-E:\Projects\Nexora\Server\Nexora.Api\obj\Debug\net8.0\Nexora.Api.xml
 E:\Projects\Nexora\Server\Nexora.Api\bin\Debug\net8.0\Google.Apis.dll
 E:\Projects\Nexora\Server\Nexora.Api\bin\Debug\net8.0\Google.Apis.Auth.dll
 E:\Projects\Nexora\Server\Nexora.Api\bin\Debug\net8.0\Google.Apis.Core.dll

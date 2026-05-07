@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Users.Commands.GettingUsers;
 using Nexora.Application.Users.Commands.Login;
@@ -69,12 +68,12 @@ public class UserController:ControllerBase
     [HttpPost]
     public async Task<IResult> GetUser()
     {
-        var Id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (Id.IsNullOrEmpty())
+        var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (id.IsNullOrEmpty() || id==null)
         {
             return Results.BadRequest(new { Message = "Ivalid id" });
         }
-        return await _authService.RetrieveUser(Id);
+        return await _authService.RetrieveUser(id);
     }
     /// <summary>
     /// Update of  User.
