@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IProductBlobStorage, ProductBlobStorageService>();
         services.AddScoped<IAvatarRepository, AvatarRepository>();
         services.AddScoped<IJwtService, JwtTokenHandler>();
+        services.AddScoped<IListingPhotoRepository, ListingPhotoRepository>();
         services.Configure<BlobStorageOptions>(configuration.GetSection(BlobStorageOptions.Section));
 
         return services;

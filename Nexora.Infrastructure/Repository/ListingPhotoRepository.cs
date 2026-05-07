@@ -13,9 +13,9 @@ public class ListingPhotoRepository:IListingPhotoRepository
     {
         _context = context;
     }
-    public async Task<bool> Add(ProductImage image)
+    public async Task<bool> Add(IList<ProductImage> images)
     {
-        await _context.ProductImages.AddAsync(image);
+        await _context.ProductImages.AddRangeAsync(images);
         var result = await _context.SaveChangesAsync();
         return result > 0;
     }
@@ -40,11 +40,25 @@ public class ListingPhotoRepository:IListingPhotoRepository
         return images;
     }
 
+    public async Task<ProductImage> GetByPath(string path)
+    {
+        ProductImage? image = await _context.ProductImages.FirstOrDefaultAsync(i=>i.FilePath==path);
+        if (image == null) throw new NotFoundException(nameof(ProductImage), path);
+        return image;
+    }
+
     public async Task<bool> Delete(Guid id)
     {
         ProductImage? image = await GetById(id);
         if (image == null) throw new NotFoundException(nameof(Avatar), id);
         _context.ProductImages.Remove(image);
+        var result = await _context.SaveChangesAsync();
+        return result > 0;
+    }
+
+    public async Task<bool> DeleteRange(IList<ProductImage> images)
+    {
+        _context.ProductImages.RemoveRange(images);
         var result = await _context.SaveChangesAsync();
         return result > 0;
     }

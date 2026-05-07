@@ -1,10 +1,9 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
+using Nexora.Application.Interfaces.Repositories;
 using Nexora.Domain.Entities;
 using Nexora.Domain.Exceptions;
 using ValidationException = System.ComponentModel.DataAnnotations.ValidationException;
@@ -14,7 +13,7 @@ namespace Nexora.Infrastructure.Storage;
 public class ProductBlobStorageService:IProductBlobStorage
 {
     private readonly BlobContainerClient _containerClient;
-    private readonly IApplicationDbContext _context;
+    private readonly IListingPhotoRepository _listingPhotoRepository;
 
     public static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -27,11 +26,11 @@ public class ProductBlobStorageService:IProductBlobStorage
         return $"{normalizedFolder}/{filename}";
     }
 
-    public ProductBlobStorageService(IOptions<BlobStorageOptions> options, IApplicationDbContext context)
+    public ProductBlobStorageService(IOptions<BlobStorageOptions> options, IListingPhotoRepository listingPhotoRepository)
     {
         var client = new BlobServiceClient(options.Value.ConnectionString);
-        _context = context; 
         _containerClient = client.GetBlobContainerClient(options.Value.ContainerName);
+        _listingPhotoRepository = listingPhotoRepository;
     }
     public async Task<IReadOnlyList<ProductImage>> UploadAsync(List<IFormFile> files, string folder, Guid id, Listing product, CancellationToken ct = default)
     {
@@ -54,8 +53,7 @@ public class ProductBlobStorageService:IProductBlobStorage
             images.Add(image);
         }
 
-        await _context.ProductImages.AddRangeAsync(images,ct);
-        await _context.SaveChangesAsync(ct);
+        await _listingPhotoRepository.Add(images);
         return images.AsReadOnly();
 
     }
@@ -73,8 +71,8 @@ public class ProductBlobStorageService:IProductBlobStorage
             await blobClient.DeleteIfExistsAsync();
             
         }
-        _context.ProductImages.RemoveRange(photoList);
-        await _context.SaveChangesAsync();
+
+        await _listingPhotoRepository.DeleteRange(photoList.ToList());
         return true;
     }
 
@@ -87,7 +85,7 @@ public class ProductBlobStorageService:IProductBlobStorage
 
         foreach (var path in photoList )
         {
-            var photoImage = await _context.ProductImages.FirstOrDefaultAsync(i=>i.Url == path);
+            var photoImage = await _listingPhotoRepository.GetByPath(path);
             if (photoImage is null)
             {
                 throw new NotFoundException(nameof(ProductImage), path);
@@ -95,14 +93,12 @@ public class ProductBlobStorageService:IProductBlobStorage
 
             var blobClient = _containerClient.GetBlobClient(photoImage.FilePath);
             await blobClient.DeleteIfExistsAsync();
-             _context.ProductImages.Remove(photoImage);
-             await _context.SaveChangesAsync();
+            await _listingPhotoRepository.Delete(photoImage.Id);
+             
 
 
         }
-
-        await _context.SaveChangesAsync();
-
+        
         return true;
     }
 }
