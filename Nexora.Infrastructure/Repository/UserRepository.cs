@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Nexora.Application.Common;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Users.Commands.GettingUsers;
@@ -14,9 +15,11 @@ namespace Nexora.Infrastructure.Repository;
 public class UserRepository:IUserRepository
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    public UserRepository(UserManager<ApplicationUser> userManager)
+    private readonly ILogger<UserRepository> _logger;
+    public UserRepository(UserManager<ApplicationUser> userManager, ILogger<UserRepository> logger)
     {
         _userManager = userManager;
+        _logger = logger;
     }
     public async Task<bool> AddUser(ApplicationUser user, string? password, LoginProvider? loginProvider, GoogleJsonWebSignature.Payload? payload)
     {
@@ -36,7 +39,9 @@ public class UserRepository:IUserRepository
                 LoginNames.Google));
         }
         
-        if(result is not null) return result.Succeeded;
+        if(result!=null && result.Succeeded) return result.Succeeded;
+        var errors = string.Join(", ", result?.Errors.Select(e => e.Description) ?? Array.Empty<string>());
+        _logger.LogError("Failed to create user: {Errors}", errors);
         return false;
     }
 
@@ -50,6 +55,7 @@ public class UserRepository:IUserRepository
     {
         ApplicationUser? user = await _userManager.FindByIdAsync(id);
         if (user == null) throw new NotFoundException(nameof(ApplicationUser), id);
+        
         return user;
     }
 
@@ -85,12 +91,12 @@ public class UserRepository:IUserRepository
         if (user == null) throw new NotFoundException(nameof(ApplicationUser), email);
         return user;
     }
-    public async Task<ApplicationUser?> FindById(string email)
+    public async Task<ApplicationUser?> FindById(string id)
     {
         ApplicationUser? user = await _userManager.Users
             .Include(u=>u.Address)
-            .Include(u=>u.Avatar).FirstOrDefaultAsync(u=>u.Email==email);
-        if (user == null) throw new NotFoundException(nameof(ApplicationUser), email);
+            .Include(u=>u.Avatar).FirstOrDefaultAsync(u=>u.Id==id);
+        if (user == null) throw new NotFoundException(nameof(ApplicationUser), id);
         return user;
     }
 

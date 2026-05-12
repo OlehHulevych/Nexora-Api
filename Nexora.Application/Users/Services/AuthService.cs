@@ -17,19 +17,24 @@ namespace Nexora.Application.Users.Services;
 public class AuthService:IAuthService
 {
     private readonly IAvatarService _avatarService;
+    private readonly IHttpContextAccessor _httpAccessor;
     private readonly IJwtService _jwtService;
     private readonly IUserRepository _userRepository;
+    private readonly IAddressRepository _addressRepository;
+    private readonly ICartRepository _cartRepository;
     
-    private ILogger<AuthService> _logger;
+    private readonly ILogger<AuthService> _logger;
 
     public AuthService( IAvatarService avatarService, ILogger<AuthService> logger, 
-        IJwtService jwtService,IUserRepository userRepository)
+        IJwtService jwtService,IUserRepository userRepository, IHttpContextAccessor httpAccessor, IAddressRepository addressRepository, ICartRepository cartRepository)
     {
         _avatarService = avatarService;
         _logger = logger;
         _jwtService = jwtService;
-      
+        _httpAccessor = httpAccessor;
         _userRepository = userRepository;
+        _addressRepository = addressRepository;
+        _cartRepository = cartRepository;
     }
     
     public async Task<IResult> RegisterUserService(RegisterUserCommand request)
@@ -56,19 +61,27 @@ public class AuthService:IAuthService
             
             var result = await _userRepository.AddUser(user, request.Password,null,null);
             if (!result) throw new BadHttpRequestException("Failed to create new user");
-            Domain.Entities.Cart newCart = new Domain.Entities.Cart()
-            {
-                UserId = user.Id
-            };
+            
             Domain.Entities.Address address = new Domain.Entities.Address(user.Id, request.Address.Line1,
                 request.Address.City, request.Address.Country, request.Address.PostalCode, request.Address.Line2);
+            await _addressRepository.AddAsync(address);
+            
             var resultRoles = await _userRepository.AddRole(user, RoleNames.User);
             if (!resultRoles) throw new Exception("Failed to load role to user");
+            
             UploadAvatarResponse avatarResponse =
                 await _avatarService.UploadAvatar(new UploadAvatarCommand(user.Id, user, request.Avatar), request.FirstName+"_"+request.LastName);
             if (avatarResponse.uri.IsNullOrEmpty()) throw new Exception("Register failed during the uploading avatar");
+
+            Domain.Entities.Cart newCart = new Domain.Entities.Cart
+            {
+                UserId =  user.Id
+            };
+            await _cartRepository.CreateCart(newCart);
+           
             user.Avatar = avatarResponse.Avatar;
             user.Address = address;
+            user.Cart = newCart;
             await _userRepository.UpdateUser(user);
             RegisterUserResponse registerUserResult = new RegisterUserResponse(user.Id, user.Email, user.FirstName, user.LastName, address.Line1);
             _logger.LogInformation("The user is registered");
@@ -103,7 +116,17 @@ public class AuthService:IAuthService
                 throw new BadHttpRequestException("Failed during creating token");
             }
 
-            if (token != null) return Results.Ok(new { message = "The user was logged", data = new LoginResponse(token) });
+            if (token != null)
+            {
+                _httpAccessor.HttpContext?.Response.Cookies.Append("token", token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                });
+                return Results.Ok(new { message = "The user was logged" });
+            }
         }
 
         return Results.BadRequest(new {messaage = "failed to register user"});
@@ -116,7 +139,7 @@ public class AuthService:IAuthService
             throw new BadHttpRequestException("There is no user`id");
         }
 
-        var user = await _userRepository.FindByEmail(id);
+        var user = await _userRepository.FindById(id);
         if (user == null)
         {
             throw new UserIsNotFoundException();

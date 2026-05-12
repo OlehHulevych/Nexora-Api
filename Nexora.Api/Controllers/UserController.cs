@@ -71,7 +71,7 @@ public class UserController:ControllerBase
         var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (id.IsNullOrEmpty() || id==null)
         {
-            return Results.BadRequest(new { Message = "Ivalid id" });
+            return Results.BadRequest(new { Message = "Invalid id" });
         }
         return await _authService.RetrieveUser(id);
     }

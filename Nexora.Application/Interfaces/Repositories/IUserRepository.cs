@@ -23,6 +23,6 @@ public interface IUserRepository
     public Task<bool> CheckUserIfExistByEmail(string email);
     public Task<bool> CheckPassword(ApplicationUser user, string password);
     public Task<bool> DeleteUser(string id);
-
+    public  Task<ApplicationUser?> FindById(string id);
 
 }
