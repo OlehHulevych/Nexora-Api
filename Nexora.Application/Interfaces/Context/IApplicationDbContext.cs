@@ -8,6 +8,7 @@ namespace Nexora.Application.Interfaces.Context;
 public interface IApplicationDbContext
 {
     DbSet<ApplicationUser> Users { get; }
+    DbSet<Order> Orders { get; }
     DbSet<IdentityRole> Roles { get; }
     DbSet<ProductImage> ProductImages { get; }
     public DbSet<Domain.Entities.Review> Reviews { get; set; }
