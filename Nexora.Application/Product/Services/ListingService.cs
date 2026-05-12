@@ -118,6 +118,7 @@ public class ListingService:IListingService
         }
 
         product.Update(request.Name, request.Description, request.Price, request.StockQuantity);
+        await _productRepository.UpdateProduct(product)!;
         if (request.PhotosForDelete!=null && request.PhotosForDelete.Count>0)
         {
             var result = await _storage.DeleteForEditing(request.PhotosForDelete);
