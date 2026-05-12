@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Nexora.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bb92a2f3227964458307a7e81b6f5a89a7a1042a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4004cc0af484068ce8b8a519bb32d6c734a4329c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Nexora.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Nexora.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

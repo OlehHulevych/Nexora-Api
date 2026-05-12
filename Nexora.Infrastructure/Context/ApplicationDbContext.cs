@@ -49,10 +49,12 @@ public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicatio
             .WithMany(u => u.OrderAsBuyer)
             .HasForeignKey(o => o.BuyerId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder.Entity<Address>()
-            .HasIndex(a => a.UserId)
-            .IsUnique();
+            .HasOne(a => a.User)
+            .WithOne(u => u.Address)
+            .HasForeignKey<Address>(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<OrderItem>()
             .HasOne(oi => oi.Product)
