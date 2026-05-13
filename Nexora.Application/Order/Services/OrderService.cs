@@ -51,6 +51,12 @@ public class OrderService:IOrderService
 
     public async Task<IResult> ChangeOrderStatus(Guid id, OrderStatus status)
     {
-        throw new NotImplementedException();
+        Domain.Entities.Order order = await  _orderRepository.GetOrderById(id);
+        order.Status = status;
+        bool result =await _orderRepository.UpdateOrder(order);
+        if (!result) return Results.BadRequest(new {messaage = "Failed to update order"});
+        OrderDTO dto = OrderMapper.ToDto(order);
+        return Results.Ok(new {message = "The status of order was updated", order = dto});
+
     }
 }
