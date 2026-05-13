@@ -23,14 +23,15 @@ public class CartRepository:ICartRepository
 
     public async  Task<Cart?> GetCartById(Guid id)
     {
-        Cart? cart = await _context.Carts.FirstOrDefaultAsync(c=>c.Id == id);
+        Cart? cart = await _context.Carts.Include(c=>c.items)
+            .ThenInclude(item=>item.Listing).ThenInclude(l=>l.Images).FirstOrDefaultAsync(c=>c.Id == id);
         if (cart == null) throw new NotFoundException(nameof(Cart), id);
         return cart;
     }
 
     public async Task<Cart?> GetCartByUserId(string id)
     {
-        Cart? cart = await _context.Carts.FirstOrDefaultAsync(c=>c.UserId == id);
+        Cart? cart = await _context.Carts.Include(c=>c.items).FirstOrDefaultAsync(c=>c.UserId == id);
         if (cart == null) throw new NotFoundException(nameof(Cart), id);
         return cart;
     }

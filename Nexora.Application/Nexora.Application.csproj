@@ -26,5 +26,9 @@
       <ProjectReference Include="..\Nexora.Domain\Nexora.Domain.csproj" />
       <Using Include="Nexora.Domain.Entities" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Order\Commands\" />
+      <Folder Include="Order\Responses\" />
+    </ItemGroup>
 
 </Project>

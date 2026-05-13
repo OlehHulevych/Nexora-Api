@@ -13,13 +13,6 @@ public enum OrderStatus
 
 public class Order:BaseEntity
 {
-    public Order(string buyerId, OrderStatus status, decimal totalAmount, Guid deliveredAddressId)
-    {
-        BuyerId = buyerId;
-        Status = status;
-        TotalAmount = totalAmount;
-        DeliveredAddressId = deliveredAddressId;
-    }
 
     public string BuyerId { get; set; }
     public ApplicationUser? Buyer { get; set; }
@@ -28,19 +21,12 @@ public class Order:BaseEntity
     public decimal TotalAmount { get; set; }
     public Guid DeliveredAddressId { get; set; }
     public Address? DeliveredAddress { get; set; }
-    public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+    public List<OrderItem>? Items { get; set; } = new List<OrderItem>();
 
 }
 
 public class OrderItem:BaseEntity
 {
-    public OrderItem(Guid orderId,  Guid productId, int quantity, decimal unitPrice)
-    {
-        OrderId = orderId;
-        ProductId = productId;
-        Quantity = quantity;
-        UnitPrice = unitPrice;
-    }
 
     public Guid OrderId { get; set; }
     public Order? Order { get; set; }
