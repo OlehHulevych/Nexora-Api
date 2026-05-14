@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using Nexora.Application.Cart.Requests;
+﻿using Nexora.Application.Carts.Requests;
 
 namespace Nexora.Application.Interfaces.Repositories;
 
 public interface ICartItemRepository
 {
-    public Task<Guid?> AddItemToCart(CartItem cartItem);
-    public Task RemoveItemFromCart(Guid? id);
-    public Task ChangingQuantity(ChangingQuantityRequest request);
-    public Task<Domain.Entities.Cart> GetCartByUser(string userId);
+    public Task<Guid?> Add(CartItem cartItem);
+    public Task Remove(Guid? id);
+    public Task<bool> Update(CartItem item);
+    public Task<Cart> GetCartByUser(string userId);
     public Task<CartItem?> GetCartItemById(Guid? id);
 
 }

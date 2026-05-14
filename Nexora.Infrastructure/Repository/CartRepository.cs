@@ -6,7 +6,7 @@ using Nexora.Domain.Exceptions;
 
 namespace Nexora.Infrastructure.Repository;
 
-public class CartRepository:ICartRepository
+public class CartRepository : ICartRepository
 {
     private readonly IApplicationDbContext _context;
 
@@ -14,6 +14,7 @@ public class CartRepository:ICartRepository
     {
         _context = context;
     }
+
     public async Task<bool> CreateCart(Cart cart)
     {
         await _context.Carts.AddAsync(cart);
@@ -21,18 +22,26 @@ public class CartRepository:ICartRepository
         return result > 0;
     }
 
-    public async  Task<Cart?> GetCartById(Guid id)
+    public async Task<Cart?> GetCartById(Guid id)
     {
-        Cart? cart = await _context.Carts.Include(c=>c.items)
-            .ThenInclude(item=>item.Listing).ThenInclude(l=>l.Images).FirstOrDefaultAsync(c=>c.Id == id);
+        Cart? cart = await _context.Carts.Include(c => c.items)
+            .ThenInclude(item => item.Listing).ThenInclude(l => l.Images).FirstOrDefaultAsync(c => c.Id == id);
         if (cart == null) throw new NotFoundException(nameof(Cart), id);
         return cart;
     }
 
     public async Task<Cart?> GetCartByUserId(string id)
     {
-        Cart? cart = await _context.Carts.Include(c=>c.items).FirstOrDefaultAsync(c=>c.UserId == id);
+        Cart? cart = await _context.Carts.Include(c => c.items).FirstOrDefaultAsync(c => c.UserId == id);
         if (cart == null) throw new NotFoundException(nameof(Cart), id);
         return cart;
     }
+
+    public async Task<bool> UpdateCart(Cart cart)
+    {
+        _context.Carts.Update(cart);
+        var result = await _context.SaveChangesAsync();
+        return result > 0;
+    }
+
 }

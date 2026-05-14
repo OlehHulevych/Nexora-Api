@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Nexora.Application.Cart.Requests;
+using Nexora.Application.Carts.Requests;
 using Nexora.Application.Interfaces.Services;
 
 namespace Nexora.Api.Controllers;

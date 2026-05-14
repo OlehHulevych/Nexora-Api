@@ -1,3 +1,3 @@
-﻿namespace Nexora.Application.Cart.Requests;
+﻿namespace Nexora.Application.Carts.Requests;
 
 public record ChangingQuantityRequest(Guid cartItemId, string action);
