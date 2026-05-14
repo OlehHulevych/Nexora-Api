@@ -2,7 +2,9 @@
 using Nexora.Application.Cart.Requests;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
+using Nexora.Domain.DTOs;
 using Nexora.Domain.Exceptions;
+using Nexora.Domain.Mappers;
 
 namespace Nexora.Application.Cart.Services;
 
@@ -34,8 +36,8 @@ public class CartService:ICartService
             Price = listing.Price
         };
         await _cartRepository.AddItemToCart(item);
-
-        return Results.Ok(new {message = "The listing was added to cart", data = item});
+        CartItemDto dto = CartItemMapper.ToDto(item);
+        return Results.Ok(new {message = "The listing was added to cart", data = dto});
     }
 
     public async Task<IResult> RemoveListing(Guid? id)
