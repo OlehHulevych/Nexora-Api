@@ -16,6 +16,8 @@ public class OrderRepository:IOrderRepository
     }
     public async Task<bool> CreateOrder(Order order)
     {
+        var exist = await _context.Orders.AnyAsync(item =>item.Id == order.Id );
+        if (exist) throw new ConflictException("This order already exists.");
         await _context.Orders.AddAsync(order);
         var result = await _context.SaveChangesAsync();
         return result > 0;

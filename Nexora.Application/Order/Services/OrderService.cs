@@ -33,6 +33,7 @@ public class OrderService:IOrderService
             DeliveredAddress = user.Address,
             DeliveredAddressId = user.Address.Id,
         };
+        if (!cart.items.Any()) throw new ArgumentException();
         List<OrderItem> items = cart.items.Select(item=> new OrderItem
         {
             ProductId = item.ListingId,
@@ -46,7 +47,7 @@ public class OrderService:IOrderService
         bool result = await _orderRepository.CreateOrder(newOrder);
         OrderDTO orderDto = OrderMapper.ToDto(newOrder);
         if (!result) return Results.BadRequest(new {message = "Failed to create order", order = orderDto});
-        return Results.Ok("");
+        return Results.Ok(new {message="Your order was created", order = orderDto});
     }
 
     public async Task<IResult> ChangeOrderStatus(Guid id, OrderStatus status)
