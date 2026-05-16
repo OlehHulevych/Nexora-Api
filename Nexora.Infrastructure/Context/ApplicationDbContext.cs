@@ -87,6 +87,9 @@ public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicatio
             .WithMany(r => r.Reviews)
             .HasForeignKey(r => r.MainReviewId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Entity<Order>()
+            .Property(o => o.Status)
+            .HasConversion<string>();
     }
 
     
