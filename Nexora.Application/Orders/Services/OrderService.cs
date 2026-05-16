@@ -41,7 +41,7 @@ public class OrderService:IOrderService
             Order = newOrder,
             OrderId = newOrder.Id,
             Quantity = item.Quantity,
-            UnitPrice = item.Listing.Price*item.Price
+            UnitPrice = item.Quantity*item.Price
         }).ToList();
         newOrder.Items = items;
         bool result = await _orderRepository.Create(newOrder);
