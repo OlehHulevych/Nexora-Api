@@ -27,8 +27,8 @@
       <Using Include="Nexora.Domain.Entities" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Order\Commands\" />
-      <Folder Include="Order\Responses\" />
+      <Folder Include="Orders\Commands\" />
+      <Folder Include="Orders\Responses\" />
     </ItemGroup>
 
 </Project>

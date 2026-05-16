@@ -3,7 +3,7 @@ using Nexora.Application.Carts.Services;
 using Nexora.Application.Category.Services;
 using Nexora.Application.Interfaces;
 using Nexora.Application.Interfaces.Services;
-using Nexora.Application.Order.Services;
+using Nexora.Application.Orders.Services;
 using Nexora.Application.Product.Services;
 using Nexora.Application.Review.Services;
 using Nexora.Application.Users.Commands.UploadAvatar;

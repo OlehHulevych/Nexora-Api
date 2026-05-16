@@ -5,7 +5,7 @@ using Nexora.Domain.DTOs;
 using Nexora.Domain.Exceptions;
 using Nexora.Domain.Mappers;
 
-namespace Nexora.Application.Order.Services;
+namespace Nexora.Application.Orders.Services;
 
 public class OrderService:IOrderService
 {
@@ -21,11 +21,11 @@ public class OrderService:IOrderService
     }
     public async Task<IResult> AddOrder(string id)
     {
-        Domain.Entities.Cart? cart = await _cartRepository.GetCartByUserId(id);
-        if (cart == null) throw new NotFoundException(nameof(Domain.Entities.Cart),id);
+        Cart? cart = await _cartRepository.GetCartByUserId(id);
+        if (cart == null) throw new NotFoundException(nameof(Cart),id);
         ApplicationUser? user = await _userRepository.FindById(id);
         if (user == null || user.Address==null) throw new NotFoundException(nameof(ApplicationUser), id);
-        Domain.Entities.Order newOrder = new Domain.Entities.Order()
+        Order newOrder = new Order()
         {
             Buyer = user,
             BuyerId = user.Id,
@@ -45,6 +45,8 @@ public class OrderService:IOrderService
         }).ToList();
         newOrder.Items = items;
         bool result = await _orderRepository.CreateOrder(newOrder);
+        newOrder.TotalAmount = items.Sum(i=>i.UnitPrice);
+        await _orderRepository.UpdateOrder(newOrder);
         OrderDTO orderDto = OrderMapper.ToDto(newOrder);
         if (!result) return Results.BadRequest(new {message = "Failed to create order", order = orderDto});
         return Results.Ok(new {message="Your order was created", order = orderDto});
@@ -52,7 +54,7 @@ public class OrderService:IOrderService
 
     public async Task<IResult> ChangeOrderStatus(Guid id, OrderStatus status)
     {
-        Domain.Entities.Order order = await  _orderRepository.GetOrderById(id);
+        Order order = await  _orderRepository.GetOrderById(id);
         order.Status = status;
         bool result =await _orderRepository.UpdateOrder(order);
         if (!result) return Results.BadRequest(new {messaage = "Failed to update order"});

@@ -7,7 +7,7 @@ public static class OrderMapper
 {
     public static OrderDTO ToDto(Order? order)
     {
-        if (order == null || order.DeliveredAddress==null|| order.DeliveredAddress.PostalCode==null || order.Items?.Count>0) throw new ArgumentException();
+        if (order == null || order.DeliveredAddress==null|| order.DeliveredAddress.PostalCode==null || order.Items?.Count<1) throw new ArgumentException();
         return new OrderDTO(
             order.Id,
             order.Status.ToString(),
@@ -24,7 +24,7 @@ public static class OrderMapper
                     item.Product.Images.FirstOrDefault()?.Url,
                     item.Product.Price,
                     item.Quantity,
-                    item.Quantity * item.Product.Price
+                    item.Product.Price
                 ))
                 .ToList()
         );

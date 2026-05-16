@@ -32,7 +32,7 @@ public class CartRepository : ICartRepository
 
     public async Task<Cart?> GetCartByUserId(string id)
     {
-        Cart? cart = await _context.Carts.Include(c => c.items).FirstOrDefaultAsync(c => c.UserId == id);
+        Cart? cart = await _context.Carts.Include(c => c.items).ThenInclude(i=>i.Listing).Include(c=>c.User).FirstOrDefaultAsync(c => c.UserId == id);
         if (cart == null) throw new NotFoundException(nameof(Cart), id);
         return cart;
     }

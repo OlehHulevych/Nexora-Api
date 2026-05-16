@@ -84,5 +84,9 @@ public class CartService:ICartService
         return Results.Ok(new {message = "The quantity of items was changed"});
         
     }
-    
+
+    public Task<IResult> GetCart(string id)
+    {
+        throw new NotImplementedException();
+    }
 }
