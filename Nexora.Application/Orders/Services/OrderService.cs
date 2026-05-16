@@ -44,9 +44,9 @@ public class OrderService:IOrderService
             UnitPrice = item.Listing.Price*item.Price
         }).ToList();
         newOrder.Items = items;
-        bool result = await _orderRepository.CreateOrder(newOrder);
+        bool result = await _orderRepository.Create(newOrder);
         newOrder.TotalAmount = items.Sum(i=>i.UnitPrice);
-        await _orderRepository.UpdateOrder(newOrder);
+        await _orderRepository.Update(newOrder);
         OrderDTO orderDto = OrderMapper.ToDto(newOrder);
         if (!result) return Results.BadRequest(new {message = "Failed to create order", order = orderDto});
         return Results.Ok(new {message="Your order was created", order = orderDto});
@@ -54,9 +54,9 @@ public class OrderService:IOrderService
 
     public async Task<IResult> ChangeOrderStatus(Guid id, OrderStatus status)
     {
-        Order order = await  _orderRepository.GetOrderById(id);
+        Order order = await  _orderRepository.GetById(id);
         order.Status = status;
-        bool result =await _orderRepository.UpdateOrder(order);
+        bool result =await _orderRepository.Update(order);
         if (!result) return Results.BadRequest(new {messaage = "Failed to update order"});
         OrderDTO dto = OrderMapper.ToDto(order);
         return Results.Ok(new {message = "The status of order was updated", order = dto});

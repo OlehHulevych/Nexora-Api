@@ -14,7 +14,7 @@ public class OrderRepository:IOrderRepository
     {
         _context= context;
     }
-    public async Task<bool> CreateOrder(Order order)
+    public async Task<bool> Create(Order order)
     {
      
         await _context.Orders.AddAsync(order);
@@ -22,21 +22,21 @@ public class OrderRepository:IOrderRepository
         return result > 0;
     }
 
-    public async Task<bool> UpdateOrder(Order order)
+    public async Task<bool> Update(Order order)
     {
         _context.Orders.Update(order);
         var result = await _context.SaveChangesAsync();
         return result > 0;
     }
 
-    public async Task<Order> GetOrderByUser(string id)
+    public async Task<Order> GetByUser(string id)
     {
         Order? order = await _context.Orders.FirstOrDefaultAsync(o => o.BuyerId == id);
         if (order == null) throw new NotFoundException(nameof(Order), id);
         return order;
     }
 
-    public async Task<Order> GetOrderById(Guid id)
+    public async Task<Order> GetById(Guid id)
     {
         Order? order = await _context.Orders.FirstOrDefaultAsync(o => o.Id==id);
         if (order == null) throw new NotFoundException(nameof(Order), id);

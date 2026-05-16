@@ -22,6 +22,15 @@ public class CartController:Controller
         var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return await _cartService.AddListing(request.listingId, id);
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IResult> GetCart()
+    {
+        var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (id == null) throw new UnauthorizedAccessException();
+        return await _cartService.GetCart(id);
+    }
     
     [Authorize]
     [HttpPatch]

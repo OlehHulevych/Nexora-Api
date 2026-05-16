@@ -85,8 +85,11 @@ public class CartService:ICartService
         
     }
 
-    public Task<IResult> GetCart(string id)
+    public async Task<IResult> GetCart(string id)
     {
-        throw new NotImplementedException();
+        Cart? cart = await _cartRepository.GetCartByUserId(id);
+        if (cart == null) throw new NotFoundException(nameof(Cart), id);
+        CartDto dto = CartMapper.ToDto(cart);
+        return Results.Ok(new {message="Cart was retrieved", cart = dto});
     }
 }

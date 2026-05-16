@@ -2,10 +2,10 @@
 
 public interface IOrderRepository
 {
-    public Task<bool> CreateOrder(Domain.Entities.Order order);
-    public Task<bool> UpdateOrder(Domain.Entities.Order order);
-    public Task<Domain.Entities.Order> GetOrderByUser(string id);
-    public Task<Domain.Entities.Order> GetOrderById(Guid id);
+    public Task<bool> Create(Order order);
+    public Task<bool> Update(Order order);
+    public Task<Order> GetByUser(string id);
+    public Task<Order> GetById(Guid id);
     public Task<bool> Delete(Guid id);
 
 }
