@@ -17,6 +17,16 @@ public class OrderController : Controller
     {
         _orderService = orderService;
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IResult> GetOrders()
+    {
+        string? id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (id == null) throw new UnauthorizedAccessException();
+        return await _orderService.GetOrders(id);
+
+    }
     
     [Authorize]
     [HttpPost]

@@ -28,19 +28,22 @@ public class OrderRepository:IOrderRepository
         var result = await _context.SaveChangesAsync();
         return result > 0;
     }
+    
 
-    public async Task<Order> GetByUser(string id)
+    public async Task<List<Order>> GetByUser(string userId)
     {
-        Order? order = await _context.Orders.Include(o=>o.DeliveredAddress).Include(o=>o.Items)!.ThenInclude(i=>i.Product).FirstOrDefaultAsync(o => o.BuyerId == id);
-        if (order == null) throw new NotFoundException(nameof(Order), id);
-        return order;
+        return await _context.Orders
+            .Include(o => o.DeliveredAddress)
+            .Include(o => o.Items)
+            .ThenInclude(i => i.Product)
+            .Where(o => o.BuyerId == userId)
+            .ToListAsync();
     }
 
-    public async Task<Order> GetById(Guid id)
+    public async Task<Order?> GetById(Guid id)
     {
-        Order? order = await _context.Orders.Include(o=>o.DeliveredAddress).Include(o=>o.Items)!.ThenInclude(i=>i.Product).FirstOrDefaultAsync(o => o.Id == id);
-        if (order == null) throw new NotFoundException(nameof(Order), id);
-        return order;
+       return await _context.Orders.Include(o=>o.DeliveredAddress).Include(o=>o.Items)!.ThenInclude(i=>i.Product).FirstOrDefaultAsync(o => o.Id == id);
+       
     }
 
     public async Task<bool> Delete(Guid id)

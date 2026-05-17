@@ -6,4 +6,5 @@ public interface IOrderService
 {
     public Task<IResult> AddOrder(string id);
     public Task<IResult> ChangeOrderStatus(Guid id, OrderStatus status);
+    public Task<IResult> GetOrders(string id);
 }

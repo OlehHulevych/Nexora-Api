@@ -54,12 +54,22 @@ public class OrderService:IOrderService
 
     public async Task<IResult> ChangeOrderStatus(Guid id, OrderStatus status)
     {
-        Order order = await  _orderRepository.GetById(id);
+        Order? order = await  _orderRepository.GetById(id);
+        if (order == null) throw new NotFoundException(nameof(Order), id);
         order.Status = status;
         bool result =await _orderRepository.Update(order);
         if (!result) return Results.BadRequest(new {messaage = "Failed to update order"});
         OrderDTO dto = OrderMapper.ToDto(order);
         return Results.Ok(new {message = "The status of order was updated", order = dto});
 
+    }
+
+    
+
+    public async Task<IResult> GetOrders(string id)
+    {
+        List<Order> query = await _orderRepository.GetByUser(id);
+        List<OrderDTO> orders = query.Select(OrderMapper.ToDto).ToList();
+        return Results.Ok(new {message="The orders are fetched", orders});
     }
 }

@@ -14,14 +14,14 @@ public enum OrderStatus
 public class Order:BaseEntity
 {
 
-    public string BuyerId { get; set; }
+    public string BuyerId { get; set; } = string.Empty;
     public ApplicationUser? Buyer { get; set; }
     public OrderStatus Status { get; set; }
     [Column(TypeName = "decimal(10,2)")]
     public decimal TotalAmount { get; set; }
     public Guid DeliveredAddressId { get; set; }
     public Address? DeliveredAddress { get; set; }
-    public List<OrderItem>? Items { get; set; } = new List<OrderItem>();
+    public List<OrderItem> Items { get; set; } = [];
 
 }
 
