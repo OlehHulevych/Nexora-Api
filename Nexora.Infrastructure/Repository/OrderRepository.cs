@@ -31,14 +31,14 @@ public class OrderRepository:IOrderRepository
 
     public async Task<Order> GetByUser(string id)
     {
-        Order? order = await _context.Orders.FirstOrDefaultAsync(o => o.BuyerId == id);
+        Order? order = await _context.Orders.Include(o=>o.DeliveredAddress).Include(o=>o.Items)!.ThenInclude(i=>i.Product).FirstOrDefaultAsync(o => o.BuyerId == id);
         if (order == null) throw new NotFoundException(nameof(Order), id);
         return order;
     }
 
     public async Task<Order> GetById(Guid id)
     {
-        Order? order = await _context.Orders.FirstOrDefaultAsync(o => o.Id==id);
+        Order? order = await _context.Orders.Include(o=>o.DeliveredAddress).Include(o=>o.Items)!.ThenInclude(i=>i.Product).FirstOrDefaultAsync(o => o.Id == id);
         if (order == null) throw new NotFoundException(nameof(Order), id);
         return order;
     }
