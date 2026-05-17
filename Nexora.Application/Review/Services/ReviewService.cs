@@ -22,10 +22,10 @@ public class ReviewService:IReviewService
         _reviewRepository = reviewRepository;
     }
 
-    public async Task<IResult> AddReview(ReviewRequest? request)
+    public async Task<IResult> AddReview(string id, ReviewRequest? request)
     {
         if (request == null) throw new BadHttpRequestException("The required data are missing");
-        var user = await _userManager.FindByIdAsync(request.UserId);
+        var user = await _userManager.FindByIdAsync(id);
         if (user == null) throw new AuthenticationException("Failed to find user");
         var listing = await _productRepository.GetById(request.ListingId);
         if (listing == null) throw new NotFoundException(nameof(Listing), request.ListingId);
