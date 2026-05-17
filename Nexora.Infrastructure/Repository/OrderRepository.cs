@@ -42,7 +42,7 @@ public class OrderRepository:IOrderRepository
 
     public async Task<Order?> GetById(Guid id)
     {
-       return await _context.Orders.Include(o=>o.DeliveredAddress).Include(o=>o.Items)!.ThenInclude(i=>i.Product).FirstOrDefaultAsync(o => o.Id == id);
+       return await _context.Orders.Include(o=>o.DeliveredAddress).Include(o=>o.Items).ThenInclude(i=>i.Product).FirstOrDefaultAsync(o => o.Id == id);
        
     }
 

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
-
+using Microsoft.EntityFrameworkCore;
 using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Product.Command;
+using Nexora.Application.Product.Responses;
 using Nexora.Domain.DTOs;
 using Nexora.Domain.Exceptions;
 
@@ -79,13 +80,20 @@ public class ListingService:IListingService
             throw new BadHttpRequestException("There is no any data for getting listings. Please try again");
         }
 
-        var response = await _productRepository.GetAll(request);
-        if (response == null)
+        IQueryable<Listing>? queries = await _productRepository.GetAll(request);
+        if (queries == null ) throw new BadHttpRequestException("Failed to fetch listings");
+        int length = await queries.CountAsync();
+        List<ProductDto> listings = await queries.OrderBy(l => l.CreatedAt).Skip((request.page - 1) * 10).Take(10)
+            .Select(l => new ProductDto(l.Name, l.Description, l.Price, l.StockQuantity, l.isActive, l.SellerId,
+                l.Category!.Name, l.Images.Select(i => i.Url), l.Reviews
+                    .Select(r => new ReviewDto(r.Author!.FirstName + " " + r.Author.LastName, r.Rating, r.Comment))))
+            .ToListAsync();
+        if (listings.Count < 1)
         {
             throw new BadHttpRequestException("Failed to fetch listings");
         }
 
-        return Results.Ok(new {message = "Listings are fetched", data = response});
+        return Results.Ok(new {message = "Listings are fetched", data = new GetProductResponse(listings, request.page, length / 10)});
 
 
 

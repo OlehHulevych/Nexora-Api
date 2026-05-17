@@ -34,22 +34,11 @@ public class ProductRepository:IProductRepository
 
     
 
-    public async Task<GetProductResponse?> GetAll(GetProductsCommand request)
+    public async Task<IQueryable<Listing>?> GetAll(GetProductsCommand request)
     {
-        IQueryable<Listing> queries = _context.Listings.Include(l => l.Category).Include(l => l.Images)
+        return _context.Listings.Include(l => l.Category).Include(l => l.Images)
             .Include(l => l.Reviews).ThenInclude(r => r.Author).Include(l => l.Category).AsQueryable();
-        int length = await _context.Listings.CountAsync();
-        List<ProductDto> listings = await queries.OrderBy(l => l.CreatedAt).Skip((request.page - 1) * 10).Take(10)
-            .Select(l => new ProductDto(l.Name, l.Description, l.Price, l.StockQuantity, l.isActive, l.SellerId,
-                l.Category!.Name, l.Images.Select(i => i.Url), l.Reviews
-                    .Select(r => new ReviewDto(r.Author!.FirstName + " " + r.Author.LastName, r.Rating, r.Comment))))
-            .ToListAsync();
-        if (listings.Count < 1)
-        {
-            throw new BadHttpRequestException("Failed to fetch listings");
-        }
-
-        return new GetProductResponse(listings, request.page, length / 10);
+        
     }
 
     public async Task<Listing?> GetById(Guid? id)
