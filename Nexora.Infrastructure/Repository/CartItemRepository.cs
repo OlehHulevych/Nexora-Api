@@ -45,14 +45,9 @@ public class CartItemRepository:ICartItemRepository
     }
     
 
-    public async Task<Cart> GetCartByUser(string userId)
-    {
-        Cart? cart = await _context.Carts.FirstOrDefaultAsync(c=>c.UserId==userId);
-        if (cart == null) throw new NotFoundException(nameof(Cart), userId);
-        return cart;
-    }
+  
 
-    public async Task<CartItem?> GetCartItemById(Guid? id)
+    public async Task<CartItem?> GetById(Guid? id)
     {
         if (id == null) throw new BadHttpRequestException("Id is required");
         return await _context.CartItems.FirstOrDefaultAsync(ct=>ct.Id==id);

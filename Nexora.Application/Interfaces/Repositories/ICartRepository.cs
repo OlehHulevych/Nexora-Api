@@ -2,8 +2,8 @@
 
 public interface ICartRepository
 {
-    public Task<bool> CreateCart(Cart cart);
-    public Task<Cart?> GetCartById(Guid id);
-    public Task<Cart?> GetCartByUserId(string id);
-    public Task<bool> UpdateCart(Cart cart);
+    public Task<bool> Create(Cart cart);
+    public Task<Cart?> GetById(Guid id);
+    public Task<Cart?> GetByUserId(string id);
+    public Task<bool> Update(Cart cart);
 }

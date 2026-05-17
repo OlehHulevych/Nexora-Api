@@ -57,7 +57,7 @@ public class ListingService:IListingService
             Seller = user
         };
         Console.WriteLine(product.Name);
-        var createdId = await _productRepository.CreateProduct(product);
+        var createdId = await _productRepository.Create(product);
         if (createdId == Guid.Empty)
         {
             throw new Exception("Failed to create Exception");
@@ -79,7 +79,7 @@ public class ListingService:IListingService
             throw new BadHttpRequestException("There is no any data for getting listings. Please try again");
         }
 
-        var response = await _productRepository.GetAllProduct(request);
+        var response = await _productRepository.GetAll(request);
         if (response == null)
         {
             throw new BadHttpRequestException("Failed to fetch listings");
@@ -99,7 +99,7 @@ public class ListingService:IListingService
         }
 
         
-        var listing = await _productRepository.GetProductById(id);
+        var listing = await _productRepository.GetById(id);
         if (listing == null)
         {
             throw new BadHttpRequestException("There is no listing");
@@ -111,14 +111,14 @@ public class ListingService:IListingService
     
     public async Task<IResult> UpdateProductHandler(UpdateProductCommand request)
     {
-        Listing? product = await _productRepository.GetProductById(request.listingId);
+        Listing? product = await _productRepository.GetById(request.listingId);
         if (product == null)
         {
             throw new NotFoundException(nameof(Listing), request.listingId);
         }
 
         product.Update(request.Name, request.Description, request.Price, request.StockQuantity);
-        await _productRepository.UpdateProduct(product)!;
+        await _productRepository.Update(product)!;
         if (request.PhotosForDelete!=null && request.PhotosForDelete.Count>0)
         {
             var result = await _storage.DeleteForEditing(request.PhotosForDelete);
@@ -136,7 +136,7 @@ public class ListingService:IListingService
 
     public async Task<IResult?> RemoveListing(Guid listingId, string userId)
     {
-        return await _productRepository.DeleteProduct(listingId, userId);
+        return await _productRepository.Delete(listingId, userId);
     }
 
 

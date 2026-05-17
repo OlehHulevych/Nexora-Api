@@ -24,7 +24,7 @@ public class ProductRepository:IProductRepository
         _userManager = userManager;
         _blobStorage = blobStorage;
     }
-    public async Task<Guid?> CreateProduct(Listing listing)
+    public async Task<Guid?> Create(Listing listing)
     {
         await _context.Listings.AddAsync(listing);
         await _context.SaveChangesAsync();
@@ -34,7 +34,7 @@ public class ProductRepository:IProductRepository
 
     
 
-    public async Task<GetProductResponse?> GetAllProduct(GetProductsCommand request)
+    public async Task<GetProductResponse?> GetAll(GetProductsCommand request)
     {
         IQueryable<Listing> queries = _context.Listings.Include(l => l.Category).Include(l => l.Images)
             .Include(l => l.Reviews).ThenInclude(r => r.Author).Include(l => l.Category).AsQueryable();
@@ -52,18 +52,18 @@ public class ProductRepository:IProductRepository
         return new GetProductResponse(listings, request.page, length / 10);
     }
 
-    public async Task<Listing?> GetProductById(Guid? id)
+    public async Task<Listing?> GetById(Guid? id)
     {
         return await _context.Listings.FirstOrDefaultAsync(l => l.Id.Equals(id));
     }
 
-    public async Task? UpdateProduct(Listing listing)
+    public async Task? Update(Listing listing)
     {
         _context.Listings.Update(listing);
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IResult?> DeleteProduct(Guid listingId, string userId)
+    public async Task<IResult?> Delete(Guid listingId, string userId)
     {
         if (userId.Equals(null))
         {

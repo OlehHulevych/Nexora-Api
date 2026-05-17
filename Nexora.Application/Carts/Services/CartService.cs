@@ -25,9 +25,9 @@ public class CartService:ICartService
     {
         if (listingId == null || userId == null) throw new ArgumentException();
         if (userId == null) throw new ArgumentException();
-        Cart? userCart = await _cartRepository.GetCartByUserId(userId);
+        Cart? userCart = await _cartRepository.GetByUserId(userId);
         if (userCart == null) throw new NotFoundException(nameof(Cart), userId);
-        var listing = await _productRepository.GetProductById(listingId);
+        var listing = await _productRepository.GetById(listingId);
         if (listing == null) throw new NotFoundException(nameof(Listing), listingId);
         CartItem item = new CartItem()
         {
@@ -40,7 +40,7 @@ public class CartService:ICartService
         };
         await _cartItemRepository.Add(item);
         userCart.items.Add(item);
-        await _cartRepository.UpdateCart(userCart);
+        await _cartRepository.Update(userCart);
         CartItemDto dto = CartItemMapper.ToDto(item);
         return Results.Ok(new {message = "The listing was added to cart", data = dto});
     }
@@ -63,7 +63,7 @@ public class CartService:ICartService
             throw new ArgumentNullException(nameof(request), "Request cannot be null.");
         }
 
-        CartItem? cartItem = await _cartItemRepository.GetCartItemById(request.cartItemId);
+        CartItem? cartItem = await _cartItemRepository.GetById(request.cartItemId);
         if (cartItem == null) throw new NotFoundException(nameof(CartItem), request.cartItemId);
         if (request.action == ActsNames.Increase)
         {
@@ -87,7 +87,7 @@ public class CartService:ICartService
 
     public async Task<IResult> GetCart(string id)
     {
-        Cart? cart = await _cartRepository.GetCartByUserId(id);
+        Cart? cart = await _cartRepository.GetByUserId(id);
         if (cart == null) throw new NotFoundException(nameof(Cart), id);
         CartDto dto = CartMapper.ToDto(cart);
         return Results.Ok(new {message="Cart was retrieved", cart = dto});

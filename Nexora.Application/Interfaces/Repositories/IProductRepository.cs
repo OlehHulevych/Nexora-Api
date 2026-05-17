@@ -7,9 +7,9 @@ namespace Nexora.Application.Interfaces.Repositories;
 
 public interface IProductRepository
 {
-    public Task<Guid?> CreateProduct(Listing listing);
-    public Task<GetProductResponse?> GetAllProduct(GetProductsCommand request);
-    public Task<Listing?> GetProductById(Guid? id);
-    public Task? UpdateProduct(Listing listing);
-    public Task<IResult?> DeleteProduct(Guid listingId, string userId);
+    public Task<Guid?> Create(Listing listing);
+    public Task<GetProductResponse?> GetAll(GetProductsCommand request);
+    public Task<Listing?> GetById(Guid? id);
+    public Task? Update(Listing listing);
+    public Task<IResult?> Delete(Guid listingId, string userId);
 }

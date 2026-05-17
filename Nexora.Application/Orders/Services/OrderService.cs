@@ -21,7 +21,7 @@ public class OrderService:IOrderService
     }
     public async Task<IResult> AddOrder(string id)
     {
-        Cart? cart = await _cartRepository.GetCartByUserId(id);
+        Cart? cart = await _cartRepository.GetByUserId(id);
         if (cart == null) throw new NotFoundException(nameof(Cart),id);
         ApplicationUser? user = await _userRepository.FindById(id);
         if (user == null || user.Address==null) throw new NotFoundException(nameof(ApplicationUser), id);

@@ -27,7 +27,7 @@ public class ReviewService:IReviewService
         if (request == null) throw new BadHttpRequestException("The required data are missing");
         var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null) throw new AuthenticationException("Failed to find user");
-        var listing = await _productRepository.GetProductById(request.ListingId);
+        var listing = await _productRepository.GetById(request.ListingId);
         if (listing == null) throw new NotFoundException(nameof(Listing), request.ListingId);
         Domain.Entities.Review newReview = new Domain.Entities.Review()
         {
@@ -51,7 +51,7 @@ public class ReviewService:IReviewService
         var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null) throw new AuthenticationException("Failed to find user");
         Domain.Entities.Review? review = await _reviewRepository.GetByIdAsync(request.ReviewId);
-        var listing = await _productRepository.GetProductById(request.ListingId);
+        var listing = await _productRepository.GetById(request.ListingId);
         if (listing != null)
         {
             Domain.Entities.Review answeringReview = new Domain.Entities.Review

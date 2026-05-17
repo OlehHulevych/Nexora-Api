@@ -15,14 +15,14 @@ public class CartRepository : ICartRepository
         _context = context;
     }
 
-    public async Task<bool> CreateCart(Cart cart)
+    public async Task<bool> Create(Cart cart)
     {
         await _context.Carts.AddAsync(cart);
         var result = await _context.SaveChangesAsync();
         return result > 0;
     }
 
-    public async Task<Cart?> GetCartById(Guid id)
+    public async Task<Cart?> GetById(Guid id)
     {
         Cart? cart = await _context.Carts.Include(c => c.items)
             .ThenInclude(item => item.Listing).ThenInclude(l => l.Images).Include(c=>c.User).FirstOrDefaultAsync(c => c.Id == id);
@@ -30,14 +30,14 @@ public class CartRepository : ICartRepository
         return cart;
     }
 
-    public async Task<Cart?> GetCartByUserId(string id)
+    public async Task<Cart?> GetByUserId(string id)
     {
         Cart? cart = await _context.Carts.Include(c => c.items).ThenInclude(i=>i.Listing).ThenInclude(l => l.Images).Include(c=>c.User).FirstOrDefaultAsync(c => c.UserId == id);
         if (cart == null) throw new NotFoundException(nameof(Cart), id);
         return cart;
     }
 
-    public async Task<bool> UpdateCart(Cart cart)
+    public async Task<bool> Update(Cart cart)
     {
         _context.Carts.Update(cart);
         var result = await _context.SaveChangesAsync();

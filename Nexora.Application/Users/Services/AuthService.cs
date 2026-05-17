@@ -77,7 +77,7 @@ public class AuthService:IAuthService
             {
                 UserId =  user.Id
             };
-            await _cartRepository.CreateCart(newCart);
+            await _cartRepository.Create(newCart);
            
             user.Avatar = avatarResponse.Avatar;
             user.Address = address;
