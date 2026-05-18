@@ -1,3 +1,3 @@
-﻿namespace Nexora.Application.Review.Request;
+﻿namespace Nexora.Application.Reviews.Request;
 
 public record ReviewRequest (Guid ListingId, int Rating, string Comment );

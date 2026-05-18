@@ -5,7 +5,7 @@ using Nexora.Application.Interfaces;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Orders.Services;
 using Nexora.Application.Product.Services;
-using Nexora.Application.Review.Services;
+using Nexora.Application.Reviews.Services;
 using Nexora.Application.Users.Commands.UploadAvatar;
 using Nexora.Application.Users.Commands.Validation;
 using Nexora.Application.Users.Services;

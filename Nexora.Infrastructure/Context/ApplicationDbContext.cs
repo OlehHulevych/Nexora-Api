@@ -15,6 +15,7 @@ public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicatio
     public DbSet<OrderItem> OrderItems { get; set; }
     
     public DbSet<Cart> Carts { get; set; }
+    public DbSet<ReviewLike> ReviewLikes { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Listing> Listings { get; set; }
     public DbSet<Address> Addresses => Set<Address>();
@@ -83,13 +84,30 @@ public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicatio
             .WithOne()
             .HasForeignKey<Cart>(ct => ct.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+        
         builder.Entity<Review>().HasOne(r => r.MainReview)
             .WithMany(r => r.Reviews)
             .HasForeignKey(r => r.MainReviewId)
             .OnDelete(DeleteBehavior.Cascade);
+        
         builder.Entity<Order>()
             .Property(o => o.Status)
             .HasConversion<string>();
+
+        builder.Entity<Review>().HasMany(r => r.Likes)
+            .WithOne(l => l.Review)
+            .HasForeignKey(l => l.ReviewId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<ReviewLike>().HasOne(l => l.Author)
+            .WithMany()
+            .HasForeignKey(l => l.AuthorId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<ReviewLike>()
+            .Property(l => l.Act)
+            .HasConversion<string>();
+
     }
 
     

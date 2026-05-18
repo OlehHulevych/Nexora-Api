@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexora.Application.Interfaces.Services;
-using Nexora.Application.Review.Request;
+using Nexora.Application.Reviews.Request;
 
 namespace Nexora.Api.Controllers;
 [ApiController]

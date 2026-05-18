@@ -19,7 +19,8 @@ public class Review:BaseEntity
     
     [MaxLength(500)]
     public string? Comment { get; set; }
-    public int? Likes { get; set; }
+
+    public List<ReviewLike> Likes { get; set; } = new List<ReviewLike>();
     public List<Review> Reviews { get; set; } = new List<Review>();
 
 }
