@@ -17,12 +17,22 @@ public class ReviewController : ControllerBase
     }
     [Authorize]
     [HttpPost]
-    public async Task<IResult> AddReview([FromBody] ReviewRequest request)
+    public async Task<IResult> AddReview([FromForm] ReviewRequest request)
     {
         string? id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (id == null) throw new UnauthorizedAccessException();
         return await _reviewService.AddReview(id, request);
     }
+
+    [Authorize]
+    [HttpPost("/answer")]
+    public async Task<IResult> AnswerReview([FromForm]AnswerOnReviewRequest request)
+    {
+        string? id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (id == null) throw new UnauthorizedAccessException();
+        return await _reviewService.AnswerOnReview(id, request);
+    }
+    
     
     
 }

@@ -7,6 +7,6 @@ namespace Nexora.Application.Interfaces.Services;
 public interface IReviewService
 {
     public Task<IResult> AddReview(string id, ReviewRequest? request);
-    public Task<IResult> AnswerOnReview(AnswerOnReviewRequest? request);
+    public Task<IResult> AnswerOnReview(string userId, AnswerOnReviewRequest? request);
     public Task<IResult> RemoveReview(Guid? id);
 }

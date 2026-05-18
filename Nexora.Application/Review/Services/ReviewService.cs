@@ -45,10 +45,10 @@ public class ReviewService:IReviewService
     }
     
 
-    public async Task<IResult> AnswerOnReview(AnswerOnReviewRequest? request)
+    public async Task<IResult> AnswerOnReview(string userId,AnswerOnReviewRequest? request)
     {
-        if (request == null || request.ReviewId == null || request.UserId==null || request.ListingId == null) throw new ArgumentNullException(nameof(request), "ReviewId is required");
-        var user = await _userManager.FindByIdAsync(request.UserId);
+        if (request == null || request.ReviewId == null || request.ListingId == null) throw new ArgumentNullException(nameof(request), "ReviewId is required");
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null) throw new AuthenticationException("Failed to find user");
         Domain.Entities.Review? review = await _reviewRepository.GetByIdAsync(request.ReviewId);
         var listing = await _productRepository.GetById(request.ListingId);
