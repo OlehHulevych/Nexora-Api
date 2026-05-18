@@ -8,11 +8,12 @@ namespace Nexora.Application.Interfaces.Context;
 public interface IApplicationDbContext
 {
     DbSet<ApplicationUser> Users { get; }
-    DbSet<Domain.Entities.Order> Orders { get; }
+    DbSet<Order> Orders { get; }
     DbSet<IdentityRole> Roles { get; }
     DbSet<ProductImage> ProductImages { get; }
-    public DbSet<Domain.Entities.Review> Reviews { get; set; }
-    DbSet<Domain.Entities.Cart> Carts { get;}
+    public DbSet<Review> Reviews { get; set; }
+    DbSet<Cart> Carts { get;}
+    DbSet<ReviewLike> ReviewLikes { get; }
     DbSet<CartItem> CartItems { get;}
     DbSet<IdentityUserRole<string>> UserRoles { get; }
     DbSet<Domain.Entities.Category> Categories { get; }
