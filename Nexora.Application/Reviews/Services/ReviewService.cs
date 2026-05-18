@@ -15,12 +15,15 @@ public class ReviewService:IReviewService
     private readonly IUserRepository _userRepository;
     private readonly IProductRepository _productRepository;
     private readonly IReviewRepository _reviewRepository;
+    private readonly IReviewLikeRepository _reviewLikeRepository;
+    
 
-    public ReviewService(IUserRepository userRepository , IProductRepository productRepository, IReviewRepository reviewRepository)
+    public ReviewService(IUserRepository userRepository , IProductRepository productRepository, IReviewRepository reviewRepository, IReviewLikeRepository reviewLikeRepository)
     {
         _productRepository = productRepository;
         _reviewRepository = reviewRepository;
         _userRepository = userRepository;
+        _reviewLikeRepository = reviewLikeRepository;
     }
 
     public async Task<IResult> AddReview(string id, ReviewRequest? request)
@@ -92,6 +95,9 @@ public class ReviewService:IReviewService
         };
         if (action == LikeNames.like) newReviewLike.Act = ReviewActs.LIKE;
         else if (action == LikeNames.dislike) newReviewLike.Act = ReviewActs.DISLIKE;
+        await _reviewLikeRepository.Create(newReviewLike);
+        
+        
     }
 
     public async Task<IResult> RemoveReview(Guid? id)
