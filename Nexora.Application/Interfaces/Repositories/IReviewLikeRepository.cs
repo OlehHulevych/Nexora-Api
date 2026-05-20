@@ -7,5 +7,6 @@ public interface IReviewLikeRepository
     Task<IList<ReviewLike>> GetAllByReviewId(Guid reviewId);
     Task<bool> UpdateAsync(ReviewLike review);
     Task<bool> DeleteAsync(Guid? id);
-   
+    Task<ReviewLike?> GetByReviewIdAndUserId(Guid reviewId, string userId);
+    Task<bool> Exists(ReviewLike reviewLike);
 }

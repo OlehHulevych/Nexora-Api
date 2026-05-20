@@ -95,10 +95,24 @@ public class ReviewService:IReviewService
             AuthorId = userId,
             Author = author,
         };
+        bool existLike = await _reviewLikeRepository.Exists(newReviewLike);
+        if (existLike)
+        {
+            ReviewLike? like = await _reviewLikeRepository.GetByReviewIdAndUserId(newReviewLike.ReviewId,
+                newReviewLike.AuthorId);
+            if (like == null) throw new NotFoundException(nameof(ReviewLike),newReviewLike.ReviewId);
+            if (like.Act == ReviewActs.LIKE) like.Act = ReviewActs.DISLIKE; 
+            else if (like.Act == ReviewActs.DISLIKE) like.Act = ReviewActs.LIKE;
+            await _reviewLikeRepository.UpdateAsync(like);
+            return Results.Ok(new {message="The like was updated"});
+
+        }
         if (request.Action == LikeNames.like) newReviewLike.Act = ReviewActs.LIKE;
         else if (request.Action == LikeNames.dislike) newReviewLike.Act = ReviewActs.DISLIKE;
         await _reviewLikeRepository.Create(newReviewLike);
         ReviewLikeDto dto = ReviewLikeMapper.ToDto(newReviewLike);
+        review.Likes.Add(newReviewLike);
+        await _reviewRepository.UpdateAsync(review);
         return Results.Ok(new { message = "your rating was sent", data=dto });
 
 

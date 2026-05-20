@@ -16,6 +16,9 @@ public class ReviewLikeRepository:IReviewLikeRepository
     }
     public async Task<bool> Create(ReviewLike reviewlike)
     {
+        bool exist = await _context.ReviewLikes.AnyAsync(l =>
+            l.ReviewId == reviewlike.ReviewId && l.AuthorId == reviewlike.AuthorId);
+        if (exist) throw new ConflictException(nameof(ReviewLike));
         await _context.ReviewLikes.AddAsync(reviewlike);
         var result = await _context.SaveChangesAsync();
         return result > 0;
@@ -47,5 +50,14 @@ public class ReviewLikeRepository:IReviewLikeRepository
         return result > 0;
     }
 
-    
+    public async Task<ReviewLike?> GetByReviewIdAndUserId(Guid reviewId, string userId)
+    {
+        return await _context.ReviewLikes.Where(l=>l.ReviewId==reviewId && l.AuthorId==userId).FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> Exists(ReviewLike reviewLike)
+    {
+        return await _context.ReviewLikes.AnyAsync(l =>
+            l.ReviewId == reviewLike.ReviewId && l.AuthorId == reviewLike.AuthorId);
+    }
 }
