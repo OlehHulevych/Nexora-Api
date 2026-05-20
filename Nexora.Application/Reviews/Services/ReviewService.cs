@@ -82,10 +82,10 @@ public class ReviewService:IReviewService
 
     }
 
-    public async Task<IResult> RateReview(Guid id,string action, string userId)
+    public async Task<IResult> RateReview(RateReviewRequest request, string userId)
     {
-        Review? review = await _reviewRepository.GetByIdAsync(id);
-        if (review == null) throw new NotFoundException(nameof(Review), id);
+        Review? review = await _reviewRepository.GetByIdAsync(request.ReviewId);
+        if (review == null) throw new NotFoundException(nameof(Review), request.ReviewId);
         ApplicationUser? author = await _userRepository.FindById(userId);
         if (author == null) throw new NotFoundException(nameof(ApplicationUser), userId);
         ReviewLike newReviewLike = new ReviewLike
@@ -95,8 +95,8 @@ public class ReviewService:IReviewService
             AuthorId = userId,
             Author = author,
         };
-        if (action == LikeNames.like) newReviewLike.Act = ReviewActs.LIKE;
-        else if (action == LikeNames.dislike) newReviewLike.Act = ReviewActs.DISLIKE;
+        if (request.Action == LikeNames.like) newReviewLike.Act = ReviewActs.LIKE;
+        else if (request.Action == LikeNames.dislike) newReviewLike.Act = ReviewActs.DISLIKE;
         await _reviewLikeRepository.Create(newReviewLike);
         ReviewLikeDto dto = ReviewLikeMapper.ToDto(newReviewLike);
         return Results.Ok(new { message = "your rating was sent", data=dto });

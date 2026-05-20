@@ -32,6 +32,16 @@ public class ReviewController : ControllerBase
         if (id == null) throw new UnauthorizedAccessException();
         return await _reviewService.AnswerOnReview(id, request);
     }
+
+    [Authorize]
+    [HttpPost("/like")]
+    public async Task<IResult> LikeReview([FromForm] RateReviewRequest request)
+    {
+        string? id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (id == null) throw new UnauthorizedAccessException();
+        return await _reviewService.RateReview(request, id);
+    } 
+    
     
     
     
