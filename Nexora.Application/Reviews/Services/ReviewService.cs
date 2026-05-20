@@ -1,5 +1,6 @@
 ﻿using System.Security.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Reviews.Request;
@@ -7,6 +8,7 @@ using Nexora.Domain.Constants;
 using Nexora.Domain.DTOs;
 using Nexora.Domain.Enums;
 using Nexora.Domain.Exceptions;
+using Nexora.Domain.Mappers;
 
 namespace Nexora.Application.Reviews.Services;
 
@@ -96,8 +98,10 @@ public class ReviewService:IReviewService
         if (action == LikeNames.like) newReviewLike.Act = ReviewActs.LIKE;
         else if (action == LikeNames.dislike) newReviewLike.Act = ReviewActs.DISLIKE;
         await _reviewLikeRepository.Create(newReviewLike);
-        
-        
+        ReviewLikeDto dto = ReviewLikeMapper.ToDto(newReviewLike);
+        return Results.Ok(new { message = "your rating was sent", data=dto });
+
+
     }
 
     public async Task<IResult> RemoveReview(Guid? id)
