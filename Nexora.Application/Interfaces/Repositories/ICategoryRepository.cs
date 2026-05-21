@@ -1,5 +1,6 @@
 ﻿
 
+
 namespace Nexora.Application.Interfaces.Repositories;
 
 public interface ICategoryRepository

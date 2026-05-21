@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿
+using Microsoft.AspNetCore.Http;
 using Nexora.Application.Carts.Requests;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Interfaces.Services;
@@ -12,9 +13,9 @@ namespace Nexora.Application.Carts.Services;
 public class CartService:ICartService
 {
     private readonly ICartRepository _cartRepository;
-    private readonly ICartItemRepository _cartItemRepository;
+    private readonly IBaseRepository<CartItem, Guid> _cartItemRepository;
     private readonly IProductRepository _productRepository;
-    public CartService(ICartRepository cartRepository, ICartItemRepository cartItemRepository, IProductRepository productRepository)
+    public CartService(ICartRepository cartRepository, IBaseRepository<CartItem, Guid> cartItemRepository, IProductRepository productRepository)
     {
         _cartItemRepository = cartItemRepository;
         _productRepository = productRepository;
@@ -45,10 +46,10 @@ public class CartService:ICartService
         return Results.Ok(new {message = "The listing was added to cart", data = dto});
     }
 
-    public async Task<IResult> RemoveListing(Guid? id)
+    public async Task<IResult> RemoveListing(Guid id)
     {
         if (id == Guid.Empty || id.Equals(null)) throw new BadHttpRequestException("There is no id for removing");
-        await _cartItemRepository.Remove(id);
+        await _cartItemRepository.Delete(id);
 
         return Results.Ok(new {message = "The listing was removed from cart"});
 

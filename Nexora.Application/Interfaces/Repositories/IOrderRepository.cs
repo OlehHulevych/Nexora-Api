@@ -1,11 +1,14 @@
-﻿namespace Nexora.Application.Interfaces.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Nexora.Domain.Entities;
 
-public interface IOrderRepository
+namespace Nexora.Application.Interfaces.Repositories;
+
+public interface IOrderRepository:IBaseRepository<Order, Guid>
 {
-    public Task<bool> Create(Order order);
-    public Task<bool> Update(Order order);
+   
     public Task<List<Order>> GetByUser(string id);
-    public Task<Order?> GetById(Guid id);
-    public Task<bool> Delete(Guid id);
+   
 
 }

@@ -8,7 +8,7 @@ public interface ICartService
 {
     public Task<IResult> AddListing(Guid? listingId, string? userId);
 
-    public Task<IResult> RemoveListing(Guid? id);
+    public Task<IResult> RemoveListing(Guid id);
 
     public  Task<IResult> ChangeListingQuantity(ChangingQuantityRequest request);
     public Task<IResult> GetCart(string id);

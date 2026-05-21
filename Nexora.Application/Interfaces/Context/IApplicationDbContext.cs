@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Nexora.Domain.Entities;
-using Nexora.Domain.Enums;
 
 namespace Nexora.Application.Interfaces.Context;
 
@@ -25,6 +24,7 @@ public interface IApplicationDbContext
     DbSet<IdentityRoleClaim<string>> RoleClaims { get; }
     DbSet<Listing> Listings { get; set; }
     DbSet<Domain.Entities.Address> Addresses { get; }
+    DbSet<T> Set<T>() where T : class;
     DbSet<Avatar> Avatars { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken=default);
 }

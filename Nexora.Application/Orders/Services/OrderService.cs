@@ -44,7 +44,7 @@ public class OrderService:IOrderService
             UnitPrice = item.Quantity*item.Price
         }).ToList();
         newOrder.Items = items;
-        bool result = await _orderRepository.Create(newOrder);
+        bool result = await _orderRepository.Add(newOrder);
         newOrder.TotalAmount = items.Sum(i=>i.UnitPrice);
         await _orderRepository.Update(newOrder);
         OrderDTO orderDto = OrderMapper.ToDto(newOrder);

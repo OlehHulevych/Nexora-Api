@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Nexora.Application.Product.Command;
 using Nexora.Application.Product.Responses;
 using Nexora.Domain.DTOs;
+using Nexora.Domain.Entities;
 
 namespace Nexora.Application.Interfaces.Repositories;
 

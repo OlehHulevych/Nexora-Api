@@ -1,4 +1,8 @@
-﻿namespace Nexora.Application.Interfaces.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Nexora.Application.Interfaces.Repositories;
 
 public interface IAddressRepository
 {

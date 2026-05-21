@@ -1,4 +1,8 @@
-﻿namespace Nexora.Application.Interfaces.Repositories;
+﻿using System;
+using System.Threading.Tasks;
+using Nexora.Domain.Entities;
+
+namespace Nexora.Application.Interfaces.Repositories;
 
 public interface IAvatarRepository
 {

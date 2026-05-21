@@ -5,6 +5,7 @@ using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Application.Interfaces.JwtService;
 using Nexora.Application.Interfaces.Repositories;
+using Nexora.Domain.Entities;
 using Nexora.Infrastructure.Context;
 using Nexora.Infrastructure.JWT;
 using Nexora.Infrastructure.Repository;
@@ -21,7 +22,7 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
-        services.AddScoped<ICartItemRepository, CartItemRepository>();
+        services.AddScoped<IBaseRepository<CartItem, Guid>, CartItemRepository>();
         services.AddScoped<ICartRepository, CartRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();

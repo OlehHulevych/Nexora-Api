@@ -14,9 +14,9 @@ public class OrderRepository:IOrderRepository
     {
         _context= context;
     }
-    public async Task<bool> Create(Order order)
+    public async Task<bool> Add(Order? order)
     {
-     
+        if (order == null) throw new ArgumentException();
         await _context.Orders.AddAsync(order);
         var result = await _context.SaveChangesAsync();
         return result > 0;

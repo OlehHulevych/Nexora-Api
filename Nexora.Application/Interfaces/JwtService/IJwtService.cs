@@ -1,4 +1,5 @@
-﻿using Nexora.Domain.Entities;
+﻿using System.Threading.Tasks;
+using Nexora.Domain.Entities;
 
 namespace Nexora.Application.Interfaces.JwtService;
 
