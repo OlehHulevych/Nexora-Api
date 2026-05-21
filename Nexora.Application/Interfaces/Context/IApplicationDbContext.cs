@@ -13,6 +13,8 @@ public interface IApplicationDbContext
     DbSet<ProductImage> ProductImages { get; }
     public DbSet<Review> Reviews { get; set; }
     DbSet<Cart> Carts { get;}
+    DbSet<FavoriteList> FavoriteLists { get; set; }
+    DbSet<FavoriteItem> FavoriteItems { get; set; }
     DbSet<ReviewLike> ReviewLikes { get; }
     DbSet<CartItem> CartItems { get;}
     DbSet<IdentityUserRole<string>> UserRoles { get; }

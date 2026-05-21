@@ -15,10 +15,13 @@ public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicatio
     public DbSet<OrderItem> OrderItems { get; set; }
     
     public DbSet<Cart> Carts { get; set; }
+    public DbSet<FavoriteList> FavoriteLists { get; set; }
+    public DbSet<FavoriteItem> FavoriteItems { get; set; }
     public DbSet<ReviewLike> ReviewLikes { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Listing> Listings { get; set; }
     public DbSet<Address> Addresses => Set<Address>();
+    
 
     public DbSet<Category> Categories { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
@@ -107,6 +110,18 @@ public class ApplicationDbContext:IdentityDbContext<ApplicationUser>,IApplicatio
         builder.Entity<ReviewLike>()
             .Property(l => l.Act)
             .HasConversion<string>();
+        
+        builder.Entity<FavoriteItem>()
+            .HasOne(fi => fi.Listing)
+            .WithMany()
+            .HasForeignKey(fi => fi.ListingId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<FavoriteItem>()
+            .HasOne(fi => fi.FavoriteList)
+            .WithMany(fl => fl.FavoriteItems)
+            .HasForeignKey(fi => fi.FavoriteListId)
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
 
