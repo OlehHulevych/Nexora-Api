@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Nexora.Application.Category;
-using Nexora.Application.Category.Services;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Domain.Entities;

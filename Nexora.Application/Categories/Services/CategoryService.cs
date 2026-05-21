@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
+using Nexora.Application.Categories.Commands;
 using Nexora.Application.Interfaces;
-
 using Nexora.Application.Interfaces.Repositories;
+using Nexora.Application.Interfaces.Services;
 
-namespace Nexora.Application.Category.Services;
+namespace Nexora.Application.Categories.Services;
 
 public class CategoryService:ICategoryService
 {
@@ -21,7 +22,7 @@ public class CategoryService:ICategoryService
         {
             throw new BadHttpRequestException("There must be name of category");
         }
-        Domain.Entities.Category newCategory = new Domain.Entities.Category(data.name);
+        Category newCategory = new Category(data.name);
         await CategoryRepository.AddCategory(newCategory);
         return Results.Ok(new {message = "The category was added", Category = newCategory});
     }
@@ -34,7 +35,7 @@ public class CategoryService:ICategoryService
 
         }
 
-        Domain.Entities.Category? category = await CategoryRepository.GetCategory(name);
+        Category? category = await CategoryRepository.GetCategory(name);
         if (category == null)
         {
             throw new BadHttpRequestException("There is no category with name");

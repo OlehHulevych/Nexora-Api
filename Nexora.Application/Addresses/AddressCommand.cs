@@ -1,4 +1,4 @@
-﻿namespace Nexora.Application.Address;
+﻿namespace Nexora.Application.Addresses;
 
 public record AddressCommand(
     string Line1,

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Nexora.Application.Carts.Services;
-using Nexora.Application.Category.Services;
+using Nexora.Application.Categories.Services;
 using Nexora.Application.Interfaces;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Orders.Services;

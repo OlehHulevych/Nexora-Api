@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Nexora.Application.Category;
-using Nexora.Application.Interfaces;
+using Nexora.Application.Categories.Commands;
+using Nexora.Application.Interfaces.Services;
 using Nexora.Domain.Constants;
 
 namespace Nexora.Api.Controllers;

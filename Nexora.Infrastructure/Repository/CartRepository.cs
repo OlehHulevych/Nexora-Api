@@ -15,8 +15,9 @@ public class CartRepository : ICartRepository
         _context = context;
     }
 
-    public async Task<bool> Create(Cart cart)
+    public async Task<bool> Add(Cart? cart)
     {
+        if (cart == null) throw new ArgumentException();
         await _context.Carts.AddAsync(cart);
         var result = await _context.SaveChangesAsync();
         return result > 0;
@@ -28,6 +29,14 @@ public class CartRepository : ICartRepository
             .ThenInclude(item => item.Listing).ThenInclude(l => l.Images).Include(c=>c.User).FirstOrDefaultAsync(c => c.Id == id);
         if (cart == null) throw new NotFoundException(nameof(Cart), id);
         return cart;
+    }
+
+    public async Task<bool> Delete(Guid id)
+    {
+        Cart? cart = await GetById(id);
+        if (cart == null) throw new NotFoundException(nameof(Cart), id);
+        _context.Carts.Remove(cart);
+        return await _context.SaveChangesAsync() > 0;
     }
 
     public async Task<Cart?> GetByUserId(string id)

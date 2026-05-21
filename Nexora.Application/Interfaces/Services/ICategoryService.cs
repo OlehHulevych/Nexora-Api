@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Nexora.Application.Category;
+using Nexora.Application.Categories.Commands;
 
-namespace Nexora.Application.Interfaces;
+namespace Nexora.Application.Interfaces.Services;
 
 public interface ICategoryService
 {

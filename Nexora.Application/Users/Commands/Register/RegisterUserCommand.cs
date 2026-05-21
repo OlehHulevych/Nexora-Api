@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Nexora.Application.Address;
+using Nexora.Application.Addresses;
 
 namespace Nexora.Application.Users.Commands.Register;
 

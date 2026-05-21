@@ -62,7 +62,7 @@ public class AuthService:IAuthService
             var result = await _userRepository.AddUser(user, request.Password,null,null);
             if (!result) throw new BadHttpRequestException("Failed to create new user");
             
-            Domain.Entities.Address address = new Domain.Entities.Address(user.Id, request.Address.Line1,
+            Address address = new Address(user.Id, request.Address.Line1,
                 request.Address.City, request.Address.Country, request.Address.PostalCode, request.Address.Line2);
             await _addressRepository.AddAsync(address);
             
@@ -73,11 +73,11 @@ public class AuthService:IAuthService
                 await _avatarService.UploadAvatar(new UploadAvatarCommand(user.Id, user, request.Avatar), request.FirstName+"_"+request.LastName);
             if (avatarResponse.uri.IsNullOrEmpty()) throw new Exception("Register failed during the uploading avatar");
 
-            Domain.Entities.Cart newCart = new Domain.Entities.Cart
+            Cart newCart = new Cart
             {
                 UserId =  user.Id
             };
-            await _cartRepository.Create(newCart);
+            await _cartRepository.Add(newCart);
            
             user.Avatar = avatarResponse.Avatar;
             user.Address = address;
