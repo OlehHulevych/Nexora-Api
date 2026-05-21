@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\Nexora.Api.props" />
-</Project>
