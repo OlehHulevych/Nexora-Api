@@ -50,8 +50,10 @@ public class FavoriteService:IFavoriteService
         return Results.Ok(new {message="favorites are fetched", list = favoritesDto});
     }
 
-    public Task<IResult> DeleteItemFromList(Guid id)
+    public async Task<IResult> DeleteItemFromList(Guid id)
     {
-        throw new NotImplementedException();
+        var result = await _favoriteItemRepository.Delete(id);
+        if (!result) return Results.BadRequest(new {message="Failed to remove item from list", status = result});
+        return Results.Ok(new {message="Item was removed", status = result});
     }
 }
