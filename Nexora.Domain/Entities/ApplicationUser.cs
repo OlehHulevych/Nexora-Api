@@ -19,9 +19,10 @@ public class ApplicationUser:IdentityUser
     public Avatar? Avatar { get; set; }
     public ICollection<Order> OrderAsBuyer { get; set; } = new List<Order>();
     public Address? Address { get; set; }
+    public FavoriteList FavoriteList {get;set;}
     public Cart? Cart { get; set; }
     public ICollection<Review> ReviewWritten { get; set; } = new List<Review>();
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
-    public bool Banned { get; set; } = false;
+    public bool Banned { get; set; } 
 }

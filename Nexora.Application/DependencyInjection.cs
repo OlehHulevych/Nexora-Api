@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Nexora.Application.Carts.Services;
 using Nexora.Application.Categories.Services;
+using Nexora.Application.Favorites.Services;
 using Nexora.Application.Interfaces;
 using Nexora.Application.Interfaces.Services;
 using Nexora.Application.Orders.Services;
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IGoogleAuthService, GoogleAuthService>();
         services.AddScoped<ICartService, CartService>();
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IFavoriteService, FavoriteService>();
         services.AddScoped<ValidationErrors>();
         
         

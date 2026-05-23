@@ -22,11 +22,12 @@ public class AuthService:IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IAddressRepository _addressRepository;
     private readonly ICartRepository _cartRepository;
+    private readonly IFavoriteListRepository _favoriteListRepository;
     
     private readonly ILogger<AuthService> _logger;
 
     public AuthService( IAvatarService avatarService, ILogger<AuthService> logger, 
-        IJwtService jwtService,IUserRepository userRepository, IHttpContextAccessor httpAccessor, IAddressRepository addressRepository, ICartRepository cartRepository)
+        IJwtService jwtService,IUserRepository userRepository, IHttpContextAccessor httpAccessor, IAddressRepository addressRepository, ICartRepository cartRepository, IFavoriteListRepository favoriteListRepository)
     {
         _avatarService = avatarService;
         _logger = logger;
@@ -35,6 +36,7 @@ public class AuthService:IAuthService
         _userRepository = userRepository;
         _addressRepository = addressRepository;
         _cartRepository = cartRepository;
+        _favoriteListRepository = favoriteListRepository;
     }
     
     public async Task<IResult> RegisterUserService(RegisterUserCommand request)
@@ -78,10 +80,19 @@ public class AuthService:IAuthService
                 UserId =  user.Id
             };
             await _cartRepository.Add(newCart);
+
+            FavoriteList favoriteList = new FavoriteList
+            {
+                UserId = user.Id,
+                User = user,
+                FavoriteItems = new List<FavoriteItem>()
+            };
+            await _favoriteListRepository.Add(favoriteList);
            
             user.Avatar = avatarResponse.Avatar;
             user.Address = address;
             user.Cart = newCart;
+            user.FavoriteList = favoriteList;
             await _userRepository.UpdateUser(user);
             RegisterUserResponse registerUserResult = new RegisterUserResponse(user.Id, user.Email, user.FirstName, user.LastName, address.Line1);
             _logger.LogInformation("The user is registered");
