@@ -42,9 +42,12 @@ public class FavoriteService:IFavoriteService
 
     }
 
-    public Task<IResult> GetFavoriteList(string userId)
+    public async Task<IResult> GetFavoriteList(string userId)
     {
-        throw new NotImplementedException();
+        FavoriteList? list = await _favoriteListRepository.GetByUserId(userId);
+        if (list == null) throw new NotFoundException(nameof(FavoriteList), userId);
+        List<FavoriteItemDto> favoritesDto = list.FavoriteItems.Select(item => new FavoriteItemDto(item.Id,item.Listing.Name,item.Listing.Price,list.Id)).ToList();
+        return Results.Ok(new {message="favorites are fetched", list = favoritesDto});
     }
 
     public Task<IResult> DeleteItemFromList(Guid id)
