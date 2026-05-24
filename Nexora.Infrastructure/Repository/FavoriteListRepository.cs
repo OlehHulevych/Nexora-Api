@@ -43,7 +43,7 @@ public class FavoriteListRepository:IFavoriteListRepository
 
     public async Task<FavoriteList?> GetByUserId(string id)
     {
-        return await _context.FavoriteLists.Include(fl=>fl.FavoriteItems).ThenInclude(i=>i.Listing).FirstOrDefaultAsync(fl => fl.UserId == id);
+        return await _context.FavoriteLists.Include(fl=>fl.FavoriteItems).ThenInclude(i=>i.Listing).AsNoTracking().FirstOrDefaultAsync(fl => fl.UserId == id);
 
     }
 }

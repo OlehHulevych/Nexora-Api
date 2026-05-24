@@ -27,14 +27,11 @@ public class FavoriteService:IFavoriteService
         FavoriteItem newFavoriteItem = new FavoriteItem
         {
             FavoriteListId = list.Id,
-            FavoriteList = list,
-            ListingId = listingId,
-            Listing = favoriteProduct,
+            ListingId = listingId
+            
             
         };
         await _favoriteItemRepository.Add(newFavoriteItem);
-        list.FavoriteItems.Add(newFavoriteItem);
-        await _favoriteListRepository.Update(list);
         FavoriteItemDto dto = new FavoriteItemDto(newFavoriteItem.Id, favoriteProduct.Name,favoriteProduct.Price,list.Id);
         return Results.Ok(new {message="Item was added", item = dto});
 
