@@ -46,12 +46,8 @@ public class ReviewRepository:IReviewRepository
 
     public async Task<bool> DeleteAsync(Guid? id)
     {
-        if (id == null) throw new BadHttpRequestException("The id is required");
-        Review? review = await _context.Reviews.FirstOrDefaultAsync(r => r.Id == id);
-        if (review==null) throw new NotFoundException(nameof(Review), id);
-        _context.Reviews.Remove(review);
-        var result = await _context.SaveChangesAsync();
-        return result > 0;
+        await _context.Reviews.Where(i=>i.Id==id).ExecuteDeleteAsync();
+        return await _context.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> ExistsAsync(Guid id)

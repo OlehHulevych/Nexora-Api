@@ -29,12 +29,8 @@ public class CartItemRepository:IBaseRepository<CartItem, Guid>
 
     public async Task<bool> Delete(Guid id)
     {
-        if (id.Equals(null) || id == Guid.Empty) throw new BadHttpRequestException("Id is required");
-        CartItem? cartItem = await _context.CartItems.FirstOrDefaultAsync(ct=>ct.Id == id);
-        if (cartItem == null) throw new NotFoundException(nameof(CartItem), id);
-        _context.CartItems.Remove(cartItem);
-        var result = await _context.SaveChangesAsync();
-        return result > 0;
+        await _context.CartItems.Where(i=>i.Id==id).ExecuteDeleteAsync();
+        return await _context.SaveChangesAsync() > 0;
 
 
     }
@@ -52,7 +48,7 @@ public class CartItemRepository:IBaseRepository<CartItem, Guid>
     public async Task<CartItem?> GetById(Guid id)
     {
         if (id == null) throw new BadHttpRequestException("Id is required");
-        return await _context.CartItems.FirstOrDefaultAsync(ct=>ct.Id==id);
+        return await _context.CartItems.AsNoTracking().FirstOrDefaultAsync(ct=>ct.Id==id);
     }
 
    

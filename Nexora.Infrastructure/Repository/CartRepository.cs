@@ -33,9 +33,7 @@ public class CartRepository : ICartRepository
 
     public async Task<bool> Delete(Guid id)
     {
-        Cart? cart = await GetById(id);
-        if (cart == null) throw new NotFoundException(nameof(Cart), id);
-        _context.Carts.Remove(cart);
+        await _context.Carts.Where(c=>c.Id==id).ExecuteDeleteAsync();
         return await _context.SaveChangesAsync() > 0;
     }
 

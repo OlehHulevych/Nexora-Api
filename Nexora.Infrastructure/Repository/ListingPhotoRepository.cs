@@ -49,11 +49,8 @@ public class ListingPhotoRepository:IListingPhotoRepository
 
     public async Task<bool> Delete(Guid id)
     {
-        ProductImage? image = await GetById(id);
-        if (image == null) throw new NotFoundException(nameof(Avatar), id);
-        _context.ProductImages.Remove(image);
-        var result = await _context.SaveChangesAsync();
-        return result > 0;
+        await _context.ProductImages.Where(pi=>pi.Id==id).ExecuteDeleteAsync();
+        return await _context.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> DeleteRange(IList<ProductImage> images)

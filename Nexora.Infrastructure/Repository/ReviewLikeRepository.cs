@@ -43,11 +43,8 @@ public class ReviewLikeRepository:IReviewLikeRepository
 
     public async Task<bool> DeleteAsync(Guid? id)
     {
-        ReviewLike? like = await GetById(id);
-        if (like == null) throw new NotFoundException(nameof(ReviewLike), id);
-        _context.ReviewLikes.Remove(like);
-        var result = await _context.SaveChangesAsync();
-        return result > 0;
+        await _context.ReviewLikes.Where(i=>i.Id==id).ExecuteDeleteAsync();
+        return await _context.SaveChangesAsync() > 0;
     }
 
     public async Task<ReviewLike?> GetByReviewIdAndUserId(Guid reviewId, string userId)

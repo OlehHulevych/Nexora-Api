@@ -48,10 +48,8 @@ public class OrderRepository:IOrderRepository
 
     public async Task<bool> Delete(Guid id)
     {
-        Order? order = await _context.Orders.FirstOrDefaultAsync(o => o.Id==id);
-        if (order == null) throw new NotFoundException(nameof(Order), id);
-        var result = await _context.SaveChangesAsync();
-        return result > 0;
+        await _context.Orders.Where(o=>o.Id==id).ExecuteDeleteAsync();
+        return await _context.SaveChangesAsync() > 0;
 
     }
 }

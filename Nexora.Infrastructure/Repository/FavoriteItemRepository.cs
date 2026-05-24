@@ -36,9 +36,7 @@ public class FavoriteItemRepository:IBaseRepository<FavoriteItem, Guid>
 
     public async Task<bool> Delete(Guid id)
     {
-        FavoriteItem? item = await GetById(id);
-        if (item == null) throw new NotFoundException(nameof(FavoriteItem), id);
-        _context.FavoriteItems.Remove(item);
+        await _context.FavoriteItems.Where(fi=>fi.Id==id).ExecuteDeleteAsync();
         return await _context.SaveChangesAsync() > 0;
     }
 }

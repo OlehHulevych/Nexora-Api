@@ -35,9 +35,7 @@ public class FavoriteListRepository:IFavoriteListRepository
 
     public async Task<bool> Delete(Guid id)
     {
-        FavoriteList? favoriteList = await GetById(id);
-        if (favoriteList == null) throw new NotFoundException(nameof(FavoriteList), id);
-        _context.FavoriteLists.Remove(favoriteList);
+        await _context.FavoriteLists.Where(fl=>fl.Id==id).ExecuteDeleteAsync();
         return await _context.SaveChangesAsync() > 0;
     }
 
