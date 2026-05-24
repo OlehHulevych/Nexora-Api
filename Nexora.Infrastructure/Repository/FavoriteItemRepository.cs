@@ -38,6 +38,7 @@ public class FavoriteItemRepository:IBaseRepository<FavoriteItem, Guid>
     {
         FavoriteItem? item = await GetById(id);
         if (item == null) throw new NotFoundException(nameof(FavoriteItem), id);
+        _context.FavoriteItems.Remove(item);
         return await _context.SaveChangesAsync() > 0;
     }
 }
