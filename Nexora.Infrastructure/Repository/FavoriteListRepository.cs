@@ -2,7 +2,6 @@
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Domain.Entities;
-using Nexora.Domain.Exceptions;
 
 namespace Nexora.Infrastructure.Repository;
 

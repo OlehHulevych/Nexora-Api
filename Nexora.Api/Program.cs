@@ -13,6 +13,7 @@ using Nexora.Api.Configs;
 using Nexora.Api.ExceptionHandler;
 using Nexora.Application;
 using Nexora.Application.Interfaces.Config;
+using Nexora.Application.Product.Validation;
 using Nexora.Application.Users.Commands.Register;
 using Nexora.Application.Users.Commands.Validation.Login;
 using Nexora.Infrastructure;
@@ -99,6 +100,7 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 builder.Services.AddValidatorsFromAssemblyContaining<LoginValidation>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductFormValidator>();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;

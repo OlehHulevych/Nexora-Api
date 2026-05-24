@@ -1,5 +1,4 @@
-﻿using System.Data;
-using FluentValidation;
+﻿using FluentValidation;
 using Nexora.Application.Users.Commands.Validation;
 
 namespace Nexora.Application.Users.Commands.Register;

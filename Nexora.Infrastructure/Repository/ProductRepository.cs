@@ -5,8 +5,6 @@ using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.IBlobStorage;
 using Nexora.Application.Interfaces.Repositories;
 using Nexora.Application.Product.Command;
-using Nexora.Application.Product.Responses;
-using Nexora.Domain.DTOs;
 using Nexora.Domain.Entities;
 using Nexora.Domain.Enums;
 

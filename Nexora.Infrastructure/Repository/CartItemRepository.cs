@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Nexora.Application.Carts.Requests;
 using Nexora.Application.Interfaces.Context;
 using Nexora.Application.Interfaces.Repositories;
-using Nexora.Domain.Constants;
 using Nexora.Domain.Entities;
-using Nexora.Domain.Exceptions;
 
 namespace Nexora.Infrastructure.Repository;
 
@@ -37,7 +34,7 @@ public class CartItemRepository:IBaseRepository<CartItem, Guid>
 
     public async Task<bool> Update(CartItem? item)
     {
-        _context.CartItems.Update(item);
+        if (item != null) _context.CartItems.Update(item);
         var result = await _context.SaveChangesAsync();
         return result > 0;
     }
@@ -47,8 +44,7 @@ public class CartItemRepository:IBaseRepository<CartItem, Guid>
 
     public async Task<CartItem?> GetById(Guid id)
     {
-        if (id == null) throw new BadHttpRequestException("Id is required");
-        return await _context.CartItems.AsNoTracking().FirstOrDefaultAsync(ct=>ct.Id==id);
+        return await _context.CartItems.FirstOrDefaultAsync(ct=>ct.Id==id);
     }
 
    
