@@ -4,7 +4,6 @@ using Nexora.Application.Addresses;
 namespace Nexora.Application.Users.Commands.Update;
 
 public record UpdateUserCommand ( 
-    string Id,
     string? Firstname,
     string? LastName,
     IFormFile? Photo,

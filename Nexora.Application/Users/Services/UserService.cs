@@ -35,9 +35,9 @@ public class UserService:IUserService
         return Results.Ok(new {message = "user is fetched", data = userDto});
     }
     
-    public async Task<IResult> UpdateUserHandler(UpdateUserCommand request)
+    public async Task<IResult> UpdateUserHandler(string id, UpdateUserCommand request)
     {
-        ApplicationUser? user = await _userRepository.GetUser(request.Id);
+        ApplicationUser? user = await _userRepository.GetUser(id);
         Console.WriteLine("This is user: "+user);
         if (user == null || user.Email==null)
         {

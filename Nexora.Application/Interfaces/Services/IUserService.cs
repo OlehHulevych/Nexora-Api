@@ -16,7 +16,7 @@ public interface IUserService
 
 
     public Task<IResult> PromoteUserHandler(string userId);
-    public  Task<IResult> UpdateUserHandler(UpdateUserCommand request);
+    public  Task<IResult> UpdateUserHandler(string id, UpdateUserCommand request);
     public Task<IResult> BanUserHandler(String id);
     public Task<IResult> UnBanUserHandler(String id);
     public Task<IResult> DeleteUserHandler(string id);
