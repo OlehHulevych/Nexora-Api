@@ -98,6 +98,9 @@ public class ListingService : IListingService
             _logger.LogWarning("Get products failed — repository returned null query");
             throw new BadHttpRequestException("Failed to fetch listings");
         }
+        if (!string.IsNullOrWhiteSpace(request.category))
+            queries = queries.Where(l => l.Category != null && l.Category.Name.Contains(request.category.ToLower()));
+        if (!string.IsNullOrWhiteSpace(request.Name)) queries = queries.Where(l => l.Name.Contains(request.Name));
 
         int length = await queries.CountAsync();
         _logger.LogInformation("Found {Total} listings — fetching page {Page}", length, request.page);
@@ -116,6 +119,8 @@ public class ListingService : IListingService
             _logger.LogWarning("No listings found for page {Page}", request.page);
             throw new BadHttpRequestException("Failed to fetch listings");
         }
+
+       
 
         _logger.LogInformation("Fetched {Count} listings out of {Total} — page {Page}", listings.Count, length, request.page);
         return Results.Ok(new { message = "Listings are fetched", data = new GetProductResponse(listings, request.page, length / 10) });
