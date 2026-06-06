@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.Infrastructure", "Ne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.Domain", "Nexora.Domain\Nexora.Domain.csproj", "{D4767ACB-0C4E-47E3-941D-E815BC996FA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.UnitTests", "tests\Nexora.UnitTests\Nexora.UnitTests.csproj", "{F348A09F-1CD6-4916-A65C-6575BC8E19DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{D4767ACB-0C4E-47E3-941D-E815BC996FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4767ACB-0C4E-47E3-941D-E815BC996FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4767ACB-0C4E-47E3-941D-E815BC996FA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F348A09F-1CD6-4916-A65C-6575BC8E19DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F348A09F-1CD6-4916-A65C-6575BC8E19DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F348A09F-1CD6-4916-A65C-6575BC8E19DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F348A09F-1CD6-4916-A65C-6575BC8E19DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
