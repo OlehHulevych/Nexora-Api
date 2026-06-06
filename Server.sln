@@ -1,5 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.Api", "Nexora.Api\Nexora.Api.csproj", "{4B5872E6-7044-4213-8AA2-8453A4C70625}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.Application", "Nexora.Application\Nexora.Application.csproj", "{50D74047-870F-404E-A45C-E99EF9A35C8A}"
@@ -8,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.Infrastructure", "Ne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.Domain", "Nexora.Domain\Nexora.Domain.csproj", "{D4767ACB-0C4E-47E3-941D-E815BC996FA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.UnitTests", "tests\Nexora.UnitTests\Nexora.UnitTests.csproj", "{F348A09F-1CD6-4916-A65C-6575BC8E19DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nexora.Tests", "Nexora.Tests\Nexora.Tests.csproj", "{5AEFA36F-41ED-4086-A3D2-D93D48890F2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,9 +33,9 @@ Global
 		{D4767ACB-0C4E-47E3-941D-E815BC996FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4767ACB-0C4E-47E3-941D-E815BC996FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4767ACB-0C4E-47E3-941D-E815BC996FA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F348A09F-1CD6-4916-A65C-6575BC8E19DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F348A09F-1CD6-4916-A65C-6575BC8E19DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F348A09F-1CD6-4916-A65C-6575BC8E19DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F348A09F-1CD6-4916-A65C-6575BC8E19DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AEFA36F-41ED-4086-A3D2-D93D48890F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AEFA36F-41ED-4086-A3D2-D93D48890F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AEFA36F-41ED-4086-A3D2-D93D48890F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AEFA36F-41ED-4086-A3D2-D93D48890F2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
