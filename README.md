@@ -67,8 +67,6 @@ Configure the following sections in `Nexora.Api/appsettings.json` (or via user s
 }
 ```
 
-> ⚠️ **Security note:** `appsettings.json` currently contains real connection strings and keys. These should be moved to [user secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets) or environment variables and rotated if they were ever committed to source control.
-
 ### Run the API
 
 ```bash
